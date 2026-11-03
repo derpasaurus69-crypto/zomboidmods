@@ -23,6 +23,8 @@ def place_key(place: Place) -> str:
 
 def _name_and_region(place: Place) -> list[str]:
     parts = [p.strip() for p in place.display_name.split(",") if p.strip()]
+    # Postcodes ("50400", "40004") sit before the country in some results.
+    parts = parts[:1] + [p for p in parts[1:] if not any(c.isdigit() for c in p)]
     words = [parts[0] if parts else place.name]
     if len(parts) >= 3:
         words.append(parts[-2])  # the state or region, before the country

@@ -1,6 +1,6 @@
 import re
 
-from portal.ids import mod_id, place_key, slug
+from portal.ids import mod_id, place_key, slug, title
 from portal.model import Place
 
 
@@ -33,6 +33,19 @@ def test_non_ascii_place_gives_ascii_id():
     p = Place("Ürgüp", "Ürgüp, Nevşehir, İç Anadolu Bölgesi, Türkiye",
               38.6, 34.9, (0, 0, 0, 0), "town", None)
     assert mod_id(p, "town") == "portal_urgup_ic_anadolu_bolgesi_town"
+
+
+def test_postcode_is_not_the_region():
+    p = Place("Ürgüp", "Ürgüp, Nevşehir, Central Anatolia Region, 50400, Turkey",
+              38.6, 34.9, (0, 0, 0, 0), "administrative", None)
+    assert mod_id(p, "downtown") == "portal_urgup_central_anatolia_region_downtown"
+    assert title(p) == "Ürgüp, Central Anatolia Region"
+
+
+def test_us_zip_is_not_the_region():
+    p = Place("Bardstown", "Bardstown, Nelson County, Kentucky, 40004, United States",
+              37.8, -85.4, (0, 0, 0, 0), "town", None)
+    assert title(p) == "Bardstown, Kentucky"
 
 
 def test_place_key_is_slug_of_display_name():
