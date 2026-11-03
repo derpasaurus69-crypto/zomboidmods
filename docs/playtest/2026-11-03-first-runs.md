@@ -114,6 +114,29 @@ spawn house's position.
    ![Street](schuylkill-town-street.jpg)
    ![World map](schuylkill-town-worldmap.jpg)
 
+### Recheck: spawn-screen picture after the fix
+
+After "fix: show the town's spawn picture beside vanilla Knox County's", which
+moves the pyramid back to the town's real world tiles, adds zoomX/zoomY on the
+town, and adds the `..._SpawnPicture.lua` client patch. Game restarted, without
+`-debug`.
+
+1. **No Lua errors from the patch: pass.** `console.txt` shows the mod loading
+   and contains no line mentioning SpawnPicture. The only Lua error is
+   vanilla's (a Muldraugh mannequin zone). The other errors are vanilla Knox
+   County cells, fonts and fluid containers.
+2. **Town picture: pass.** With Schuylkill Haven selected, the panel shows the
+   town's own picture: the Schuylkill River, the street grid and the
+   downtown blocks. Zooming out shows the vanilla Knox County artwork on the
+   left (its right edge, with the restaurant visitor-map legend), a cream gap,
+   then the town on the right. The frame's cream background reaches below
+   the town picture's bottom edge, which is only cosmetic.
+   ![Spawn screen, town picture](schuylkill-town-spawn-select-fixed.jpg)
+   ![Spawn screen, zoomed out](schuylkill-town-spawn-select-zoomed-out.jpg)
+3. **Switching regions: pass.** Selecting Muldraugh moves the view to the
+   vanilla Muldraugh map with its description and picture. Selecting
+   Schuylkill Haven again moves it back to the town.
+
 ## Not checked yet
 
 - Multiplayer.
