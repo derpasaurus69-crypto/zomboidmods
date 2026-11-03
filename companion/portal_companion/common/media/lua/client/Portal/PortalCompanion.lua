@@ -76,6 +76,7 @@ local function notice(text)
     local sw, sh = getCore():getScreenWidth(), getCore():getScreenHeight()
     local w, h = ISModalDialog.CalcSize(360, 160, text)
     local modal = ISModalDialog:new((sw - w) / 2, (sh - h) / 2, w, h, text, false, nil, nil)
+    modal.backgroundColor = { r = 0, g = 0, b = 0, a = 0.95 }
     modal:initialise()
     modal:addToUIManager()
     modal:setAlwaysOnTop(true)
@@ -150,7 +151,7 @@ PortalScreen = ISPanelJoypad:derive("PortalScreen")
 
 function PortalScreen:new(x, y, width, height)
     local o = ISPanelJoypad.new(self, x, y, width, height)
-    o.backgroundColor = { r = 0, g = 0, b = 0, a = 0.8 }
+    o.backgroundColor = { r = 0, g = 0, b = 0, a = 0.95 }
     o.borderColor = { r = 1, g = 1, b = 1, a = 0.5 }
     o:setAnchorsTBLR(true, true, true, true)
     return o
@@ -426,16 +427,23 @@ function MainScreen:getCurrentFocusForController()
     return vanillaFocus(self)
 end
 
--- The panel is not one of MainScreen's children, so resize it ourselves.
+-- The panel is not one of MainScreen's children, and its columns are laid out
+-- once, so build it again at the new size, keeping the selected town.
 local function onResolutionChange(oldw, oldh, neww, newh)
     local screen = PortalScreen.instance
     if not screen then return end
-    local w, h = math.floor(neww * 0.8), math.floor(newh * 0.8)
-    screen:setWidth(w)
-    screen:setHeight(h)
-    screen:setX((neww - w) / 2)
-    screen:setY((newh - h) / 2)
-    screen:recalcSize()
+    local selected = screen.selectedTown and screen.selectedTown.id
+    screen:setVisible(false)
+    screen:removeFromUIManager()
+    PortalScreen.instance = nil
+    PortalScreen.show(JoypadState.getMainMenuJoypad())
+    local fresh = PortalScreen.instance
+    for i, town in ipairs(fresh and fresh.towns or {}) do
+        if town.id == selected then
+            fresh.list.selected = i
+            fresh:onSelectTown(town)
+        end
+    end
 end
 
 Events.OnMainMenuEnter.Add(addMenuEntry)
