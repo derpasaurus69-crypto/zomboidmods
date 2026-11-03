@@ -62,7 +62,7 @@ class JobRunner:
         return str(shutil.move(path, folder / name))
 
     def _run(self, plan: AreaPlan, mod: str) -> None:
-        name = ids.title(plan.place)
+        name = ids.title(plan.place, plan.preset)
         try:
             for p in self.adapter.generate(plan, mod, installer.staging_dir(self.mods_dir),
                                            name, self._cancel):

@@ -61,7 +61,7 @@ def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
         except EngineError as exc:
             estimate = {"tight": None, "impossible": None, "error": str(exc)}
         mod = ids.mod_id(p.place, p.preset)
-        return jsonify({"plan": p.to_dict(), "mod_id": mod, "title": ids.title(p.place),
+        return jsonify({"plan": p.to_dict(), "mod_id": mod, "title": ids.title(p.place, p.preset),
                         "estimate": estimate, "existing": library.get(mod) is not None})
 
     @app.post("/api/generate")

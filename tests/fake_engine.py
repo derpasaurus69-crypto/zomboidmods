@@ -50,9 +50,11 @@ elif command == "generate":
         time.sleep(600)
     mod = os.path.join(args["staging_dir"], args["map_name"])
     os.makedirs(mod, exist_ok=True)
-    for name in ("mod.info", "ATTRIBUTION.txt"):
-        with open(os.path.join(mod, name), "w") as f:
-            f.write(name)
+    # KnoxMap names the mod (and its map folder) after the title it is given.
+    with open(os.path.join(mod, "mod.info"), "w", encoding="utf-8") as f:
+        f.write(f"name={args['title']}\nid={args['map_name']}\n")
+    with open(os.path.join(mod, "ATTRIBUTION.txt"), "w") as f:
+        f.write("ATTRIBUTION.txt")
     preview = os.path.join(args["staging_dir"], args["map_name"] + ".preview.png")
     with open(preview, "wb") as f:
         f.write(b"\x89PNG fake")

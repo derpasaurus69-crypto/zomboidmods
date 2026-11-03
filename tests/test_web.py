@@ -81,7 +81,17 @@ def test_generate_installs_and_lists_town(env, tmp_path):
     assert (tmp_path / "mods" / mod / "mod.info").exists()
     towns = get(c, "/api/towns").get_json()["towns"]
     assert [t["mod_id"] for t in towns] == [mod]
-    assert towns[0]["title"] == "Bardstown, Kentucky"
+    assert towns[0]["title"] == "Bardstown, Kentucky (Downtown)"
+
+
+def test_engine_is_given_a_title_with_the_size(env, tmp_path):
+    c, _, _ = env()
+    plan = post(c, "/api/plan", {"place": PLACE, "preset": "town"}).get_json()
+    assert plan["title"] == "Bardstown, Kentucky (Town)"
+    post(c, "/api/generate", {"place": PLACE, "preset": "town"})
+    wait_done(c)
+    info = tmp_path / "mods" / "portal_bardstown_kentucky_town" / "mod.info"
+    assert "name=Bardstown, Kentucky (Town)" in info.read_text(encoding="utf-8")
 
 
 def test_generate_leaves_staging_empty_and_keeps_preview(env, tmp_path):

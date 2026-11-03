@@ -134,7 +134,7 @@ async function loadTowns() {
   $("towns").innerHTML = towns.length ? "" : "<li class='note'>None yet.</li>";
   for (const t of towns) {
     const li = document.createElement("li");
-    li.textContent = `${t.title} — ${t.preset.replace("_", " ")}`;
+    li.textContent = t.title;
     li.addEventListener("click", () => finished(t.mod_id, t.title));
     $("towns").append(li);
   }

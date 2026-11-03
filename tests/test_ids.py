@@ -48,6 +48,22 @@ def test_us_zip_is_not_the_region():
     assert title(p) == "Bardstown, Kentucky"
 
 
+def test_title_with_preset_names_the_size():
+    p = Place("Bardstown", "Bardstown, Nelson County, Kentucky, United States",
+              37.8, -85.4, (0, 0, 0, 0), "town", None)
+    assert title(p, "downtown") == "Bardstown, Kentucky (Downtown)"
+    assert title(p, "town") == "Bardstown, Kentucky (Town)"
+    assert title(p, "city_core") == "Bardstown, Kentucky (City core)"
+
+
+def test_sizes_of_one_place_never_share_a_title():
+    # The title is the mod's name in the game and its map folder; two sizes
+    # of one town with the same title collide when both are enabled.
+    p = Place("Bardstown", "Bardstown, Kentucky, United States",
+              37.8, -85.4, (0, 0, 0, 0), "town", None)
+    assert len({title(p, s) for s in ("downtown", "town", "city_core")}) == 3
+
+
 def test_place_key_is_slug_of_display_name():
     p = Place("Monaco", "Monaco", 43.7, 7.4, (0, 0, 0, 0), "country", None)
     assert place_key(p) == "monaco"

@@ -31,9 +31,17 @@ def _name_and_region(place: Place) -> list[str]:
     return words
 
 
-def title(place: Place) -> str:
-    """'Bardstown, Kentucky': what players see, in the place's own spelling."""
-    return ", ".join(_name_and_region(place))
+PRESET_LABELS = {"downtown": "Downtown", "town": "Town", "city_core": "City core"}
+
+
+def title(place: Place, preset: str | None = None) -> str:
+    """'Bardstown, Kentucky (Town)': what players see, in the place's own spelling.
+
+    KnoxMap names the mod and its map folder after this, so each size of a
+    place needs its own: two mods with one map folder collide in the game.
+    """
+    name = ", ".join(_name_and_region(place))
+    return f"{name} ({PRESET_LABELS[preset]})" if preset else name
 
 
 def mod_id(place: Place, preset: str) -> str:

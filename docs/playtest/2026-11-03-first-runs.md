@@ -1,34 +1,86 @@
 # First runs — 2026-11-03
 
-KnoxMap 1.8.4, Project Zomboid 42 (Steam build 25485521), Dean's PC.
+KnoxMap 1.8.4, Project Zomboid 42.21.0 (Steam build 25485521), Dean's PC.
 
 | Run | How | Cells | Time | Result |
 |---|---|---|---|---|
 | Bardstown, Kentucky — downtown | spike driver | 25 | 3.2 min | installed, 31 MB; 854 buildings, 113 named streets, 8 spawn points |
 | Ürgüp, Central Anatolia Region — downtown | Portal UI, browser | 25 | 11.5 min (9 min OSM download) | installed, 26 MB; Workshop folder prepared |
-| Bardstown, Kentucky — town | Portal.exe API | 169 | 16.3 min | installed, 185 MB |
+| Bardstown, Kentucky — town | Portal.exe API | 169 | 16.3 min | installed, 185 MB; played in-game, see below |
 
 ![Bardstown town](bardstown-town.png)
 
 ![Ürgüp downtown](urgup-downtown.png)
 
-## Checked
+## In-game playtest: Bardstown, Kentucky (Town)
 
-- Dedicated server (`-nosteam`, `Zomboid/Server/portaltest.ini`) booted with the Bardstown
-  downtown mod and `Map=Bardstown, Kentucky Portal spike;Muldraugh, KY`: `SERVER STARTED`,
-  no SEVERE lines or exceptions. Its log only samples 24 lot loads, so it does not prove
-  our cells were read.
-- Previews are KnoxMap's render of the compiled lots: real street grid, rail line, campus.
+Solo, "Rising" preset, default character. The game ran windowed for the test
+(`Zomboid/options.ini` borderless=false, restored afterwards) and later with
+`-debug` so a Lua console could teleport, scan containers and reveal the map.
 
-## Not checked yet (needs the game client)
+### Checked
 
-- Spawning into the town from New Game; streets and buildings in place.
-- Loot in shops matching their type; world map street names.
-- Whether `town` really followed Bardstown's outline (the preview fills the whole square).
+- **Mods menu:** the mod is listed and enables (id `portal_bardstown_kentucky_town`).
+  ![Mods list](bardstown-town-mods-list.jpg)
+- **New Game:** "Bardstown, Kentucky" is offered as a spawn region next to the
+  vanilla towns, and the game starts there.
+- **Streets and buildings:** downtown (cell 88_5, around 22656,1408) has a
+  two-lane street with lane markings, sidewalks, grass verges, a street light,
+  a fire hydrant and shop fronts with doors.
+  ![Downtown street](bardstown-town-downtown-street.jpg)
+  ![Shop fronts](bardstown-town-shopfronts.jpg)
+- **Loot matches the shop:** a Lua scan of the 300×300 tiles around downtown
+  found 2,107 containers; loot had already spawned in the game's own way (none
+  needed filling). Samples:
+  - grocery fridges: cheese, milk, lard, margarine
+  - pharmacy: pills in the display case, medical and relationship paperbacks
+  - clothing store: shoes, work boots, sports T-shirts and shorts
+  - convenience store fridges: water, burritos, juice boxes, croissants
+  - general store: bowls, cutlery, whetstones; candy; yoghurt
+  - garden store: seed packets, farming books, gravel bags
+  - bookstore: knitting, tailoring, welding and mechanics books
+  - bank: paperwork and letters in filing cabinets
+  - restaurant kitchen: plates, bowls, mugs, oven mitts
+
+  Around the spawn house (residential), 191 of 209 containers had loot.
+- **World map:** works, in both isometric and top-down views, with real
+  street names (West Flaget Street, North 3rd Street, West Broadway, Mulberry
+  Alley, Blackberry Alley, Raspberry Alley) and labelled landmarks (Women's
+  Civil War Museum, Episcopal Church of the Ascension, Bardstown United
+  Methodist Church, Medica Pharmacy & Wellness Center, Proto-Cathedral School).
+  ![World map, downtown](bardstown-town-worldmap-downtown.jpg)
+- **Town outline:** the `town` preset did clip to Bardstown's city limits.
+  The outline KnoxMap was given covers 86% of the 3 km square, and only 8 of
+  2,549 buildings fall outside it. Bardstown's limits fill most of that square,
+  so the revealed map still looks square, with roads running to its edges.
+  ![World map, whole town](bardstown-town-worldmap-full.jpg)
+- Dedicated server (`-nosteam`, `Zomboid/Server/portaltest.ini`) booted with the
+  Bardstown downtown mod: `SERVER STARTED`, no SEVERE lines or exceptions.
+
+### Broken or rough
+
+- **Fixed in Portal:** every size of one place had the same name, e.g. Downtown
+  and Town were both "Bardstown, Kentucky". KnoxMap uses that name for the mod
+  and for its map folder, so the two would share one map folder if both were
+  enabled. Portal now names them "Bardstown, Kentucky (Town)" and so on. The
+  towns already installed keep their old names until they are made again.
+- **KnoxMap side, not fixed:**
+  - The spawn screen shows a blank map for the town.
+  - The Mods list shows no poster image.
+  - The first spawn was a dark, unlit house at the north edge of the map
+    (spawn point 22567,131), not downtown. It is one of 8 spawn points KnoxMap
+    picks.
+- Zombies were waiting on the downtown street right away, which is normal for
+  the game.
+
+## Not checked yet
+
 - Multiplayer.
+- Ürgüp and the downtown preset in the client (only Bardstown Town was played).
 
 ## Bugs found and fixed on the way
 
 - Postcodes ("50400") were taken as the region in IDs and titles.
 - Previews and engine logs were left in the staging folder.
 - A damaged preview image crashed Publish.
+- Each size of one place had the same mod name and map folder (found in-game).
