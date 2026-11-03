@@ -30,13 +30,17 @@ class EngineAdapter:
     def __init__(self, knoxmap_dir: Path, tested_versions: frozenset[str] = TESTED_VERSIONS,
                  allow_untested: bool = False, python: Path | None = None,
                  runner: Path | None = None, pz_install: str | None = None) -> None:
-        self.knoxmap_dir = Path(knoxmap_dir)
         self.tested_versions = tested_versions
         self.allow_untested = allow_untested
-        self.python = Path(python) if python else self.knoxmap_dir / ".venv" / "Scripts" / "python.exe"
+        self._own_python = Path(python) if python else None
+        self.set_knoxmap_dir(knoxmap_dir)
         self.runner = Path(runner or RUNNER)
         self.pz_install = pz_install
         self.last_result: dict = {}
+
+    def set_knoxmap_dir(self, knoxmap_dir: Path | str | None) -> None:
+        self.knoxmap_dir = Path(knoxmap_dir) if knoxmap_dir else Path("KnoxMap folder not set")
+        self.python = self._own_python or self.knoxmap_dir / ".venv" / "Scripts" / "python.exe"
 
     # ---- the process ----------------------------------------------------------
 
@@ -87,7 +91,7 @@ class EngineAdapter:
     def _missing(self) -> str:
         return (f"KnoxMap was not found at {self.knoxmap_dir}. Install KnoxMap "
                 "(github.com/spytheeuclidean-a11y/knoxmap) and run its Setup, then "
-                "point Portal at its folder in Settings.")
+                "enter its folder below.")
 
     # ---- what Portal asks for --------------------------------------------------
 

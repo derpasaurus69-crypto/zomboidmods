@@ -7,18 +7,20 @@ from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
 
-from . import ids, planner, publisher
+from . import ids, planner, publisher, settings
 from .engine.adapter import EngineAdapter, EngineError
 from .jobs import Busy, JobRunner
 from .library import TownLibrary
 from .model import Place
 
 LOCAL_HOSTS = {"127.0.0.1", "localhost", "[::1]", "::1"}
+VERSION = "0.1.0"
 PRESET_ORDER = list(planner.PRESETS)
 
 
 def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
-               workshop_root: Path | None = None, launcher=None) -> Flask:
+               workshop_root: Path | None = None, launcher=None,
+               settings_path: Path | None = None) -> Flask:
     app = Flask(__name__)
     jobs = JobRunner(adapter, library, mods_dir)
     app.config["jobs"] = jobs
@@ -37,12 +39,24 @@ def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
 
     @app.get("/")
     def index():
-        return render_template("index.html")
+        return render_template("index.html", version=VERSION)
 
     @app.get("/api/engine")
     def engine():
         s = adapter.check()
         return jsonify({"ok": s.ok, "version": s.version, "problem": s.problem})
+
+    @app.post("/api/settings")
+    def save_settings():
+        folder = ((request.get_json(silent=True) or {}).get("knoxmap_dir") or "").strip().strip('"')
+        if not settings.is_knoxmap(folder):
+            return jsonify({"error": f"{folder or 'That'} is not a KnoxMap folder that has been set up. "
+                                     "Pick the folder with KnoxMap's app.py, after running its Setup."}), 400
+        values = settings.load(settings_path)
+        values["knoxmap_dir"] = folder
+        settings.save(values, settings_path)
+        adapter.set_knoxmap_dir(folder)
+        return engine()
 
     @app.get("/api/search")
     def search():

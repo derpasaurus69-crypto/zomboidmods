@@ -1,3 +1,4 @@
+[hidden] { display: none !important; }
 :root {
   --bg: #f4f2ec; --panel: #ffffff; --ink: #1f2420; --muted: #5d665f;
   --accent: #6b2a22; --accent-ink: #ffffff; --line: #d9d5ca; --bar: #6b2a22;
@@ -39,3 +40,7 @@ footer { font-size: .85rem; margin-top: 24px; }
 .spawn { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
 .check { display: flex; gap: 8px; align-items: center; margin: 0 0 12px; }
 .check input { flex: none; }
+footer a { color: inherit; }
+footer details { margin-top: 8px; }
+footer summary { cursor: pointer; }
+footer ul { padding-left: 20px; }

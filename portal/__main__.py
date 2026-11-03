@@ -18,7 +18,7 @@ def main() -> None:
     s = settings.load()
     adapter = EngineAdapter(s["knoxmap_dir"], allow_untested=s["allow_untested_engine"],
                             pz_install=s["pz_install"])
-    app = create_app(adapter, TownLibrary(), zomboid_mods_dir())
+    app = create_app(adapter, TownLibrary(), zomboid_mods_dir(), settings_path=settings.default_path())
     if not os.environ.get("PORTAL_NO_BROWSER"):
         threading.Timer(1.0, lambda: webbrowser.open(f"http://127.0.0.1:{PORT}/")).start()
     app.run(host="127.0.0.1", port=PORT, threaded=True)

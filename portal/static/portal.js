@@ -20,11 +20,21 @@ async function api(path, body) {
 
 function show(id, on = true) { $(id).hidden = !on; }
 
-async function checkEngine() {
-  const e = await api("/api/engine").catch((err) => ({ ok: false, problem: err.message }));
+function showEngine(e) {
   $("engine").textContent = e.ok ? "" : e.problem;
   $("engine").classList.toggle("bad", !e.ok);
+  show("knoxmap-form", !e.ok && /not found/.test(e.problem || ""));
 }
+
+async function checkEngine() {
+  showEngine(await api("/api/engine").catch((err) => ({ ok: false, problem: err.message })));
+}
+
+$("knoxmap-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  showEngine(await api("/api/settings", { knoxmap_dir: $("knoxmap-dir").value })
+    .catch((err) => ({ ok: false, problem: err.message + " (not found)" })));
+});
 
 $("search-form").addEventListener("submit", async (ev) => {
   ev.preventDefault();  // search only on submit: Nominatim's rules, and KnoxMap's

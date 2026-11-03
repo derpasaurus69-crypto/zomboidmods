@@ -12,6 +12,12 @@
     <h1>Portal</h1>
     <p class="sub">Type a real place. Play it in Project Zomboid.</p>
     <p id="engine" class="engine" role="status"></p>
+    <form id="knoxmap-form" hidden>
+      <label for="knoxmap-dir" class="sr">KnoxMap folder</label>
+      <input id="knoxmap-dir" placeholder="KnoxMap folder, e.g. C:\Users\you\Downloads\knoxmap-main"
+             autocomplete="off" required>
+      <button type="submit">Use this folder</button>
+    </form>
   </header>
 
   <section id="find">
@@ -66,7 +72,27 @@
     <ul id="towns"></ul>
   </section>
 
-  <footer>Map data © OpenStreetMap contributors (ODbL). Maps built by KnoxMap.</footer>
+  <footer>
+    <p>Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap
+      contributors</a> (ODbL). Maps built by KnoxMap.</p>
+    <details id="about">
+      <summary>About Portal</summary>
+      <p>Portal {{ version }} by Dean. Free, and every map it makes is free.</p>
+      <ul>
+        <li>Maps are built by <a href="https://github.com/spytheeuclidean-a11y/knoxmap" target="_blank"
+            rel="noopener">KnoxMap</a> by euclid80tr, based on Knoxify by arytek. Install KnoxMap
+            yourself; Portal does not include it.</li>
+        <li>Map data © OpenStreetMap contributors, available under the
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">ODbL</a>.
+            Buildings follow the real map; everything inside them is invented.</li>
+        <li>Unofficial fan production for non-commercial purposes, not affiliated with or endorsed
+            by The Indie Stone. Thanks to The Indie Stone for creating Project Zomboid.</li>
+      </ul>
+      <p>Nothing in Portal is locked or donor-only. If you'd like to support its development, you
+        can <a href="https://buymeacoffee.com/derpasauruo" target="_blank" rel="noopener">buy me a coffee</a>.
+        Tips go to Portal only, not to KnoxMap, its author or The Indie Stone.</p>
+    </details>
+  </footer>
 </main>
 <script src="{{ url_for('static', filename='portal.js') }}"></script>
 </body>

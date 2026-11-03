@@ -26,7 +26,8 @@ def env(tmp_path, monkeypatch):
         adapter = EngineAdapter(knox, python=Path(sys.executable), runner=FAKE)
         launched = []
         app = create_app(adapter, TownLibrary(tmp_path / "library.json"), tmp_path / "mods",
-                         tmp_path / "Workshop", launcher=lambda: launched.append(True))
+                         tmp_path / "Workshop", launcher=lambda: launched.append(True),
+                         settings_path=tmp_path / "settings.json")
         return app.test_client(), app, launched
     return make
 
@@ -52,6 +53,34 @@ def test_page_serves(env):
     c, _, _ = env()
     r = get(c, "/")
     assert r.status_code == 200 and b"Generate &amp; Play" in r.data
+
+
+def test_knoxmap_folder_can_be_set_from_the_page(env, tmp_path):
+    c, app, _ = env()
+    knox = tmp_path / "Downloads" / "knoxmap-main"
+    (knox / ".venv" / "Scripts").mkdir(parents=True)
+    (knox / ".venv" / "Scripts" / "python.exe").write_bytes(b"")
+    (knox / "app.py").write_text("")
+    r = post(c, "/api/settings", {"knoxmap_dir": f'"{knox}"'})  # pasted with quotes
+    assert r.status_code == 200 and r.get_json()["ok"] is True
+    assert json.loads((tmp_path / "settings.json").read_text())["knoxmap_dir"] == str(knox)
+
+
+def test_a_folder_that_is_not_knoxmap_is_refused(env, tmp_path):
+    c, _, _ = env()
+    r = post(c, "/api/settings", {"knoxmap_dir": str(tmp_path)})
+    assert r.status_code == 400 and "not a KnoxMap folder" in r.get_json()["error"]
+    assert not (tmp_path / "settings.json").exists()
+
+
+def test_about_credits_and_tip_link(env):
+    c, _, _ = env()
+    page = get(c, "/").data.decode()
+    assert "Portal 0.1.0" in page
+    assert "https://buymeacoffee.com/derpasauruo" in page
+    assert "euclid80tr" in page and "arytek" in page
+    assert "https://www.openstreetmap.org/copyright" in page
+    assert "not affiliated with or endorsed" in page
 
 
 def test_search_no_results(env):
