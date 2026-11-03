@@ -73,6 +73,47 @@ Solo, "Rising" preset, default character. The game ran windowed for the test
 - Zombies were waiting on the downtown street right away, which is normal for
   the game.
 
+## In-game playtest: Schuylkill Haven, Pennsylvania (Town)
+
+Tests the poster, spawn-map and address-spawn changes (commits 9806d9b,
+eaa016e, 595d97c). The mod was made with fill_gaps (2,421 buildings) and has
+one spawn point, at the address Dean chose. Solo, "Rising", game started
+with `-debug` and windowed; Bardstown turned off so the two maps could not
+overlap. The address is not written here, and no screenshot here shows the
+spawn house's position.
+
+1. **Poster and map icon: pass.** The Mods list shows a map icon next to
+   "Schuylkill Haven, Pennsylvania (Town)" and the poster (the town render)
+   in the details panel.
+   ![Mods list with poster](schuylkill-town-mods-poster.jpg)
+2. **Spawn-screen picture: fail.** The panel is no longer blank, but it shows
+   the wrong picture: the top-left corner of the vanilla Knox County spawn
+   map (its "Come and visit our esteemed partners" advert board, with the
+   P.S. Delilah, McCoy Logging and Scarlet Oak Distillery). Zooming out shows
+   only more of the vanilla artwork, never the town. Double-clicking the region
+   acts as Next and opens the occupation page; going Back shows the same
+   vanilla art again. Likely cause: the spawn screen draws every map's picture
+   in one shared space. Moving the town's pyramid bounds to 0,0 (and zoomX/zoomY
+   to 1350,1500) puts it underneath the vanilla map's picture, which is drawn
+   instead. The town's picture probably needs bounds at its real world
+   position (cells 82–94 × 0–12), with zoomX/zoomY on the town.
+   ![Spawn screen showing vanilla art](schuylkill-town-spawn-select-wrong-art.jpg)
+3. **Address spawn: pass.** A new game started exactly on the chosen spawn
+   point, standing in the doorway of a lit, furnished bathroom (sink, toilet,
+   bathtub, rug). The debug console reported room=bathroom inside a building
+   with a kitchen, living room, two bedrooms and a bathroom; the square is free
+   and not solid, so the character was not in a wall. The world map puts the
+   house on the street of the address Dean chose. Not a dark house, empty lot or
+   map edge.
+   ![Spawn room](schuylkill-town-spawn-room.jpg)
+4. **Streets, buildings, world map: pass.** Residential streets with sidewalks,
+   front paths, mailboxes, parked cars and brick or sided houses with pitched
+   roofs. The world map shows the Schuylkill River and real street names
+   (East Main Street, West Main Street, Saint John Street, Jackson Street,
+   Daisy Alley) and labelled places (Island Park, Green Goose Playground).
+   ![Street](schuylkill-town-street.jpg)
+   ![World map](schuylkill-town-worldmap.jpg)
+
 ## Not checked yet
 
 - Multiplayer.
