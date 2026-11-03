@@ -87,7 +87,8 @@ async function choosePreset(key) {
 
 $("generate").addEventListener("click", async () => {
   try {
-    await api("/api/generate", { place: chosen, preset, spawn_address: $("spawn-address").value });
+    await api("/api/generate", { place: chosen, preset, spawn_address: $("spawn-address").value,
+                                fill_gaps: $("fill-gaps").checked });
     $("job-title").textContent = lastPlan.title;
     show("size", false); show("done", false); show("job");
     poll();

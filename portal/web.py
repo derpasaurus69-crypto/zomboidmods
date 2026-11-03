@@ -88,8 +88,8 @@ def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
             return jsonify({"error": str(exc)}), 502
         if problem:
             return jsonify({"error": problem}), 400
-        if spawn:
-            p = replace(p, spawn=spawn)
+        p = replace(p, spawn=spawn,
+                    fill_gaps=bool((request.get_json(silent=True) or {}).get("fill_gaps")))
         impossible = adapter.estimate(p).get("impossible")
         if impossible:
             i = PRESET_ORDER.index(p.preset)

@@ -119,7 +119,10 @@ def cmd_generate(args: dict) -> dict:
     client = knoxmap()
 
     progress("generate", 0, "Downloading the map data")
-    call(client, "POST", "/api/generate", {**area_body(plan), "metersPerTile": 1, "mapName": name})
+    body = {**area_body(plan), "metersPerTile": 1, "mapName": name}
+    if plan.get("fill_gaps"):
+        body["settings"] = {"fill_gaps": 1}
+    call(client, "POST", "/api/generate", body)
     progress("generate", 1, "Map data ready")
 
     progress("buildings", 0, "Laying out buildings")

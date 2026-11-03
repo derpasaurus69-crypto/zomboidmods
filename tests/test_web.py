@@ -111,7 +111,16 @@ def test_generate_without_an_address_spawns_near_the_centre(env, tmp_path):
     mod = post(c, "/api/generate", {"place": PLACE, "preset": "downtown", "spawn_address": "  "}
                ).get_json()["mod_id"]
     wait_done(c)
-    assert json.loads((tmp_path / "mods" / mod / "plan.json").read_text())["spawn"] is None
+    plan = json.loads((tmp_path / "mods" / mod / "plan.json").read_text())
+    assert plan["spawn"] is None and plan["fill_gaps"] is False
+
+
+def test_fill_gaps_is_passed_to_the_engine(env, tmp_path):
+    c, _, _ = env()
+    mod = post(c, "/api/generate", {"place": PLACE, "preset": "downtown", "fill_gaps": True}
+               ).get_json()["mod_id"]
+    wait_done(c)
+    assert json.loads((tmp_path / "mods" / mod / "plan.json").read_text())["fill_gaps"] is True
 
 
 def test_spawn_address_off_the_map_is_refused_before_anything_starts(env):
