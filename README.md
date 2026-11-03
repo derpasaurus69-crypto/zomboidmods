@@ -15,6 +15,8 @@ packaging. The map itself is built by
 which turns OpenStreetMap data into a compiled PZ map. Portal does not include
 KnoxMap. You install it yourself, once, and Portal calls it.
 
+Try a finished map first: [Bardstown, Kentucky (Town) on the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3833252919).
+
 **Status:** early release (0.1.0). Two generated towns have been played
 in-game, in singleplayer on one Windows PC: Bardstown, Kentucky and
 Schuylkill Haven, Pennsylvania, both at the Town size. Multiplayer, the City
