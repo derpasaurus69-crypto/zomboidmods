@@ -137,6 +137,37 @@ town, and adds the `..._SpawnPicture.lua` client patch. Game restarted, without
    vanilla Muldraugh map with its description and picture. Selecting
    Schuylkill Haven again moves it back to the town.
 
+## Showcase check: Bardstown, Kentucky (Town), before the Workshop upload
+
+This is the regenerated mod, titled "Bardstown, Kentucky (Town)" with map folder
+"Bardstown, Kentucky Town". Schuylkill Haven was turned off. The game loaded the
+mod from the prepared Workshop folder (`Zomboid/Workshop/.../Contents/mods/...`,
+Source: Workshop). That copy is byte-identical to the one in `Zomboid/mods`
+(529 files, no differences), so this run tested exactly what gets uploaded.
+Solo, "Rising", run with `-debug`.
+
+1. **Mods list: pass.** Map icon and poster both show.
+2. **Spawn screen: pass.** Bardstown's own picture, with the street grid,
+   downtown and woods. Selecting Muldraugh moves to the vanilla map, and
+   selecting Bardstown moves back.
+   ![Spawn screen](bardstown-showcase-spawn-select.jpg)
+3. **Spawns: pass, with one dark house.** Three new games:
+   - Games 1 and 2: 22708,1681, a bedroom in a large apartment-style building
+     just southeast of Court Square. Free square, light 0.90 at 9 am, power on,
+     so it is lit.
+   - Game 3: 22691,1712, a hallway in a 29-room building. Free square, but
+     light 0.07, so it is dark.
+
+   All three were downtown, inside a home, and away from the map edge. None
+   was in a wall.
+4. **Streets and world map: pass.** The map around the spawn shows Court
+   Square, West and East Stephen Foster Avenue, Flaget Street, John Fitch
+   Avenue, Bethlehem High School, Medica Pharmacy & Wellness Center, and the
+   Episcopal and United Methodist churches.
+   ![World map, downtown](bardstown-showcase-worldmap-downtown.jpg)
+5. **Console: pass.** No line mentions SpawnPicture. The only Lua errors are
+   vanilla's Muldraugh mannequin zone.
+
 ## Not checked yet
 
 - Multiplayer.
