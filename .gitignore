@@ -7,3 +7,5 @@ __pycache__/
 spike/*.log
 *.egg-info/
 spike/.server_admin_pw
+spike/.portal_pid
+spike/.server_pid
