@@ -53,5 +53,8 @@ elif command == "generate":
     for name in ("mod.info", "ATTRIBUTION.txt"):
         with open(os.path.join(mod, name), "w") as f:
             f.write(name)
+    preview = os.path.join(args["staging_dir"], args["map_name"] + ".preview.png")
+    with open(preview, "wb") as f:
+        f.write(b"\x89PNG fake")
     emit(event="progress", step="package", pct=100, message="Done")
-    emit(event="result", mod_dir=mod, preview=None)
+    emit(event="result", mod_dir=mod, preview=preview)

@@ -45,9 +45,12 @@ def prepare(town: Town, workshop_root: Path) -> Path:
 
 def _write_preview(town: Town, path: Path) -> None:
     if town.preview and Path(town.preview).exists():
-        with Image.open(town.preview) as im:
-            ImageOps.fit(im.convert("RGB"), PREVIEW_SIZE).save(path)
-        return
+        try:
+            with Image.open(town.preview) as im:
+                ImageOps.fit(im.convert("RGB"), PREVIEW_SIZE).save(path)
+            return
+        except OSError:
+            pass  # a damaged picture gets the plain card below
     im = Image.new("RGB", PREVIEW_SIZE, (34, 40, 34))
     ImageDraw.Draw(im).text((12, 118), town.title[:36], fill=(220, 220, 200))
     im.save(path)

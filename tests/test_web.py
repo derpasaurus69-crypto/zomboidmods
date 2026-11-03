@@ -84,6 +84,17 @@ def test_generate_installs_and_lists_town(env, tmp_path):
     assert towns[0]["title"] == "Bardstown, Kentucky"
 
 
+def test_generate_leaves_staging_empty_and_keeps_preview(env, tmp_path):
+    c, _, _ = env()
+    post(c, "/api/generate", {"place": PLACE, "preset": "downtown"})
+    wait_done(c)
+    [town] = get(c, "/api/towns").get_json()["towns"]
+    assert Path(town["preview"]).parent == tmp_path / "previews"
+    assert Path(town["preview"]).exists()
+    assert list((tmp_path / "mods" / ".portal-staging").iterdir()) == []
+    assert (tmp_path / "logs" / "portal_bardstown_kentucky_downtown.engine.log").exists()
+
+
 def test_plan_reports_existing_town(env):
     c, _, _ = env()
     post(c, "/api/generate", {"place": PLACE, "preset": "downtown"})

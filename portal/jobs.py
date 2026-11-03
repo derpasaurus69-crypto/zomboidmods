@@ -1,6 +1,7 @@
 """One generation at a time, run on a thread the web page polls."""
 from __future__ import annotations
 
+import shutil
 import threading
 from datetime import datetime
 from pathlib import Path
@@ -52,6 +53,14 @@ class JobRunner:
             time.sleep(0.1)
         return self.status()
 
+    def _keep(self, path: str | None, kind: str, name: str) -> str | None:
+        """Move a file out of staging into Portal's own folder, beside the library."""
+        if not path or not Path(path).exists():
+            return None
+        folder = self.library.path.parent / kind
+        folder.mkdir(parents=True, exist_ok=True)
+        return str(shutil.move(path, folder / name))
+
     def _run(self, plan: AreaPlan, mod: str) -> None:
         name = ids.title(plan.place)
         try:
@@ -60,10 +69,13 @@ class JobRunner:
                 self._set(pct=p.pct, step=p.step, message=p.message)
             result = self.adapter.last_result
             target = installer.install(Path(result["mod_dir"]), self.mods_dir)
+            preview = self._keep(result.get("preview"), "previews", f"{mod}.png")
+            self._keep(str(installer.staging_dir(self.mods_dir) / f"{mod}.engine.log"),
+                       "logs", f"{mod}.engine.log")
             self.library.put(Town(mod_id=mod, title=name, place_key=ids.place_key(plan.place),
                                   preset=plan.preset,
                                   engine_version=self.adapter.check().version or "",
-                                  mod_dir=str(target), preview=result.get("preview"),
+                                  mod_dir=str(target), preview=preview,
                                   workshop_id=getattr(self.library.get(mod), "workshop_id", None),
                                   created=datetime.now().isoformat(timespec="seconds")))
             self._set(state="done", pct=100, message="Installed")
