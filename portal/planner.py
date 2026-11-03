@@ -1,4 +1,4 @@
-"""Turn a place and a size preset into a concrete area and an estimate."""
+﻿"""Turn a place and a size preset into a concrete area and an estimate."""
 from __future__ import annotations
 
 import math
@@ -10,10 +10,11 @@ PRESETS: dict[str, float] = {"downtown": 1.0, "town": 3.0, "city_core": 5.0}
 
 CELL_METERS = 256  # a Build 42 cell is 256 x 256 tiles
 
-# Phase 0 spike, Bardstown downtown: 25 cells in about 3.2 minutes end to end
-# (download + buildings about 1 min, compile 2.1 min). Recalibrated in Task 9.
-MINUTES_PER_CELL = 0.15
-BASE_MINUTES = 1
+# Measured on Dean's PC, 2026-11-03: Bardstown downtown 25 cells in 3.2 min,
+# Bardstown town 169 cells in 16.3 min. The OpenStreetMap download varies a lot
+# by region (Urgup downtown spent 9 of its 11.5 min downloading).
+MINUTES_PER_CELL = 0.1
+BASE_MINUTES = 2
 
 
 def plan(place: Place, preset: str) -> AreaPlan:
