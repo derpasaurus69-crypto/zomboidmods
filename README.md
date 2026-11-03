@@ -17,6 +17,8 @@ KnoxMap. You install it yourself, once, and Portal calls it.
 
 Try a finished map first: [Bardstown, Kentucky (Town) on the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3833252919).
 
+On the Steam Workshop: the [Portal companion mod](https://steamcommunity.com/sharedfiles/filedetails/?id=3833266816) adds a PORTAL entry to the main menu that lists the Portal towns you have installed and explains how to make your own.
+
 **Status:** early release (0.1.0). Two generated towns have been played
 in-game, in singleplayer on one Windows PC: Bardstown, Kentucky and
 Schuylkill Haven, Pennsylvania, both at the Town size. Multiplayer, the City
