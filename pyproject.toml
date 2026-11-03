@@ -1,0 +1,24 @@
+[project]
+name = "portal"
+version = "0.1.0"
+description = "Type a real place, play it in Project Zomboid (Build 42), built on KnoxMap."
+requires-python = ">=3.11"
+dependencies = ["flask>=3.0", "pillow>=10.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pyinstaller>=6.0"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["portal*"]
+
+[tool.setuptools.package-data]
+portal = ["templates/*", "static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["engine: slow; needs KnoxMap, Project Zomboid and network"]
+addopts = "-m 'not engine'"
