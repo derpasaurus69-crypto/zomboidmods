@@ -15,8 +15,6 @@ packaging. The map itself is built by
 which turns OpenStreetMap data into a compiled PZ map. Portal does not include
 KnoxMap. You install it yourself, once, and Portal calls it.
 
-Try a finished map first: [Bardstown, Kentucky (Town) on the Steam Workshop](STEAM_WORKSHOP_URL).
-
 **Status:** early release (0.1.0). Two generated towns have been played
 in-game, in singleplayer on one Windows PC: Bardstown, Kentucky and
 Schuylkill Haven, Pennsylvania, both at the Town size. Multiplayer, the City
@@ -40,7 +38,7 @@ is depends on how well the place is mapped in OpenStreetMap.
    newer series, Portal says so; you can install 1.8.4 from KnoxMap's
    releases page, or set `allow_untested_engine` to `true` in
    `%LOCALAPPDATA%\Portal\settings.json` to try the newer one.
-3. Download `Portal.exe` from the [releases page](GITHUB_RELEASES_URL) and
+3. Download `Portal.exe` from the [releases page](https://github.com/derpasaurus69-crypto/zomboidmods/releases) and
    run it. It opens in your browser at <http://127.0.0.1:8765/>.
 
 Portal looks for KnoxMap in your home, Documents, Desktop and Downloads
