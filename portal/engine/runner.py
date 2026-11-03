@@ -225,9 +225,17 @@ def _spawns(project: Path, mod_root: Path, extras, plan: dict) -> dict:
 def finish_mod(project: Path, mod_root: Path, extras, plan: dict, preview, title: str) -> dict:
     """Poster, spawn picture and central spawns, on top of what KnoxMap packaged."""
     _step("poster", finish.add_poster, mod_root, preview, title)
-    for map_dir in mod_root.glob("common/media/maps/*"):
-        _step("spawn picture", finish.frame_spawn_picture, map_dir)
+    _step("spawn picture", _spawn_picture, Path(project), mod_root, title)
     return _step("spawn points", _spawns, Path(project), mod_root, extras, plan) or {}
+
+
+def _spawn_picture(project: Path, mod_root: Path, title: str) -> None:
+    from tools import make_map_mod
+    origin = make_map_mod._world_origin_tiles(str(project))
+    for map_dir in mod_root.glob("common/media/maps/*"):
+        bounds = finish.frame_spawn_picture(map_dir, origin)
+        if bounds:
+            finish.write_spawn_picture_lua(mod_root, mod_root.name, map_dir.name, title, bounds)
 
 
 COMMANDS = {"check": cmd_check, "search": cmd_search, "estimate": cmd_estimate,

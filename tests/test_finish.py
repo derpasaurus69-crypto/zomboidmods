@@ -43,25 +43,49 @@ def test_poster_without_a_preview_is_a_plain_card(tmp_path):
     assert Image.open(mod / "common" / "poster.png").size == (512, 512)
 
 
-def test_spawn_picture_moves_to_the_origin_and_gets_a_zoom(tmp_path):
-    _, map_dir = fake_mod(tmp_path)
-    assert finish.frame_spawn_picture(map_dir) == (3300, 3300)
-    assert finish.frame_spawn_picture(map_dir) == (3300, 3300)  # again: unchanged
+def pyramid_txt(map_dir):
     with zipfile.ZipFile(map_dir / finish.PYRAMID) as z:
-        txt = z.read("pyramid.txt").decode()
         assert z.read("0/tile0x0.png") == b"png-bytes"
         assert all(i.compress_type == zipfile.ZIP_STORED for i in z.infolist())
-    assert "bounds=0 0 3300 3300" in txt and "imageSize=3300 3300" in txt
+        return z.read("pyramid.txt").decode()
+
+
+def test_spawn_picture_stays_at_the_towns_world_tiles_and_gets_a_zoom(tmp_path):
+    _, map_dir = fake_mod(tmp_path)
+    assert finish.frame_spawn_picture(map_dir, (21000, 0)) == (21000, 0, 24300, 3300)
+    assert finish.frame_spawn_picture(map_dir, (21000, 0)) == (21000, 0, 24300, 3300)  # again
+    txt = pyramid_txt(map_dir)
+    assert "bounds=21000 0 24300 3300" in txt and "imageSize=3300 3300" in txt
     info = (map_dir / "map.info").read_text().splitlines()
-    assert info.count("zoomX=1650") == 1 and info.count("zoomY=1650") == 1
+    assert info.count("zoomX=22650") == 1 and info.count("zoomY=1650") == 1
     assert info.count("zoomS=13.6") == 1
     assert "lots=Muldraugh, KY" in info
 
 
+def test_spawn_picture_moved_to_0_0_by_an_older_portal_is_put_back(tmp_path):
+    _, map_dir = fake_mod(tmp_path)
+    finish.frame_spawn_picture(map_dir, (0, 0))
+    assert "bounds=0 0 3300 3300" in pyramid_txt(map_dir)
+    finish.frame_spawn_picture(map_dir, (21000, 0))
+    assert "bounds=21000 0 24300 3300" in pyramid_txt(map_dir)
+
+
 def test_no_spawn_picture_is_left_alone(tmp_path):
     (tmp_path / "map.info").write_text("title=X\n")
-    assert finish.frame_spawn_picture(tmp_path) is None
+    assert finish.frame_spawn_picture(tmp_path, (21000, 0)) is None
     assert (tmp_path / "map.info").read_text() == "title=X\n"
+
+
+def test_spawn_picture_lua_registers_the_town_and_patches_once(tmp_path):
+    mod, _ = fake_mod(tmp_path)
+    path = finish.write_spawn_picture_lua(mod, "portal_x_town", 'Schuylkill Haven, "PA" Town',
+                                          "X (Town)", (21000, 0, 23700, 3000))
+    assert path == mod / "common" / "media" / "lua" / "client" / "Portal" / "portal_x_town_SpawnPicture.lua"
+    lua = path.read_text()
+    assert 'PortalSpawnPictures["Schuylkill Haven, \\"PA\\" Town"] = { maxX = 23700, maxY = 3000 }' in lua
+    assert "MapSpawnSelect.portalPatched = true" in lua
+    assert lua.count("{") == lua.count("}") and lua.count("(") == lua.count(")")
+    assert "Events.OnGameBoot.Add(patch)" in lua
 
 
 def test_spawns_are_near_the_centre_nearest_first_and_spaced():
