@@ -77,7 +77,8 @@ class JobRunner:
                                   engine_version=self.adapter.check().version or "",
                                   mod_dir=str(target), preview=preview,
                                   workshop_id=getattr(self.library.get(mod), "workshop_id", None),
-                                  created=datetime.now().isoformat(timespec="seconds")))
+                                  created=datetime.now().isoformat(timespec="seconds"),
+                                  extra_buildings=tuple(result.get("extra_buildings") or ())))
             self._set(state="done", pct=100, message="Installed")
         except EngineCancelled:
             self._set(state="cancelled", message="Cancelled")

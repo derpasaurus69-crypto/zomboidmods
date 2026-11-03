@@ -46,6 +46,15 @@ def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
         s = adapter.check()
         return jsonify({"ok": s.ok, "version": s.version, "problem": s.problem})
 
+    @app.get("/licences")
+    def licences():
+        here = Path(__file__).resolve().parent  # Portal.exe ships them beside the package
+        parts = []
+        for name in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
+            path = next((p for p in (here / name, here.parent / name) if p.is_file()), None)
+            parts.append(path.read_text(encoding="utf-8") if path else f"{name} is missing.")
+        return ("\n\n".join(parts), 200, {"Content-Type": "text/plain; charset=utf-8"})
+
     @app.post("/api/settings")
     def save_settings():
         folder = ((request.get_json(silent=True) or {}).get("knoxmap_dir") or "").strip().strip('"')
@@ -104,7 +113,10 @@ def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
             return jsonify({"error": problem}), 400
         p = replace(p, spawn=spawn,
                     fill_gaps=bool((request.get_json(silent=True) or {}).get("fill_gaps")))
-        impossible = adapter.estimate(p).get("impossible")
+        try:
+            impossible = adapter.estimate(p).get("impossible")
+        except EngineError as exc:
+            return jsonify({"error": str(exc)}), 502
         if impossible:
             i = PRESET_ORDER.index(p.preset)
             smaller = f" Try the {PRESET_ORDER[i - 1].replace('_', ' ')} size." if i else ""

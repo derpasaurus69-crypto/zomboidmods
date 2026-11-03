@@ -1,1 +1,1 @@
-﻿"""Everything that talks to KnoxMap."""
+"""Everything that talks to KnoxMap."""

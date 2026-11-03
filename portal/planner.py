@@ -1,4 +1,4 @@
-﻿"""Turn a place and a size preset into a concrete area and an estimate."""
+"""Turn a place and a size preset into a concrete area and an estimate."""
 from __future__ import annotations
 
 import math

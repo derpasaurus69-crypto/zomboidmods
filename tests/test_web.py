@@ -73,6 +73,13 @@ def test_a_folder_that_is_not_knoxmap_is_refused(env, tmp_path):
     assert not (tmp_path / "settings.json").exists()
 
 
+def test_licences_page_has_portals_and_bundled_licences(env):
+    c, _, _ = env()
+    text = get(c, "/licences").data.decode()
+    assert "MIT License" in text and "Copyright (c) 2026 Dean Amato" in text
+    assert "## Flask" in text and "## pillow" in text
+
+
 def test_about_credits_and_tip_link(env):
     c, _, _ = env()
     page = get(c, "/").data.decode()

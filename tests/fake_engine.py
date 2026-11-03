@@ -16,6 +16,8 @@ def emit(**e):
 if command == "check":
     if mode == "old":
         emit(event="result", version="1.7.0", game="D:/PZ", build42=True)
+    elif mode == "newer":
+        emit(event="result", version="1.8.9", game="D:/PZ", build42=True)
     elif mode == "b41":
         emit(event="result", version="1.8.4", game="D:/PZ", build42=False)
     else:

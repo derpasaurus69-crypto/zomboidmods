@@ -5,8 +5,8 @@ Type a real place, play it in Project Zomboid (Build 42).
 Portal is a small, free, unofficial Windows app. Search a town, pick a size
 and press **Generate & Play**. When it finishes, the town is installed as a
 map mod with real streets, real street names and furnished buildings. That
-takes a few minutes for a small area and around 10 to 20 minutes for a whole
-town. You can also choose to start at a street address, and Portal can lay
+takes a few minutes for a small area and 10 to 16 minutes for a whole town on
+the developer's PC. You can also choose to start at a street address, and Portal can lay
 the town out for the Steam Workshop uploader.
 
 Portal does the searching, the size presets, the spawn points and the
@@ -27,16 +27,19 @@ is depends on how well the place is mapped in OpenStreetMap.
 
 - Windows (Portal is Windows only)
 - Project Zomboid on Build 42
-- KnoxMap 1.8.4, installed separately
+- KnoxMap 1.8.x (tested with 1.8.4), installed separately
 
 ## Install
 
 1. Install Project Zomboid on Steam and switch it to **Build 42**
    (Properties > Betas).
-2. Install KnoxMap 1.8.4 from
+2. Install KnoxMap from
    [its GitHub page](https://github.com/spytheeuclidean-a11y/knoxmap) and
    run its `Setup.bat`, following KnoxMap's own instructions. You only do
-   this once.
+   this once. Portal works with KnoxMap 1.8.x. If KnoxMap has moved on to a
+   newer series, Portal says so; you can install 1.8.4 from KnoxMap's
+   releases page, or set `allow_untested_engine` to `true` in
+   `%LOCALAPPDATA%\Portal\settings.json` to try the newer one.
 3. Download `Portal.exe` from the [releases page](GITHUB_RELEASES_URL) and
    run it. It opens in your browser at <http://127.0.0.1:8765/>.
 
@@ -62,14 +65,16 @@ A Downtown map is about 30 MB, and a Town 110 to 185 MB.
 ## Options
 
 - **Start at an address.** Type a street address in the town. Portal finds
-  it and makes it the only spawn point, on the floor of the house there. If
-  the address is outside the chosen size, Portal says so before it starts.
-  Without an address you start in one of eight homes near the centre.
+  it and makes it the only spawn point: inside the house there when the map
+  has a home within about 30 m, otherwise on the spot itself. If the address
+  is clearly outside the chosen size, Portal says so before it starts; one
+  near the very edge may fall back to the normal spawns. Without an address
+  you start in one of eight homes near the centre.
 - **Add buildings OpenStreetMap is missing.** Some towns have few buildings
   mapped. This fills the gaps from Microsoft's building footprints (or
-  Overture Maps). It is slower, and on a well-mapped town it mostly adds
-  sheds, so use it when a town looks empty. Schuylkill Haven went from 157
-  buildings to 2,421 with it.
+  Overture Maps), and Portal adds their credit to the mod. It is slower, and
+  on a well-mapped town it mostly adds sheds, so use it when a town looks
+  empty. Schuylkill Haven went from 157 buildings to 2,421 with it.
 
 ## After generating
 
@@ -95,8 +100,10 @@ more personal than a map of a whole town.
 with `workshop.txt` (unlisted by default), `preview.png` and the mod. Upload
 it from the game: **Workshop > Create and update items**. The description
 Portal writes already has the credits below. Publishing the same town again
-keeps its Workshop id and your own description, so the next upload updates
-the item instead of making a new one.
+keeps its Workshop id and what you put in `workshop.txt` (title,
+description, tags, visibility), so the next upload updates the item instead
+of making a new one. Edit the description in `workshop.txt` rather than on
+the Steam page, or the next update will put the file's text back.
 
 If you share a town, on the Workshop or anywhere else:
 
@@ -104,6 +111,8 @@ If you share a town, on the Workshop or anywhere else:
 - on the page, credit "Map data © OpenStreetMap contributors, available
   under the ODbL" with a link to https://www.openstreetmap.org/copyright,
   and credit KnoxMap by euclid80tr;
+- if you used **Add buildings OpenStreetMap is missing**, credit that source
+  too (Portal puts the line in `ATTRIBUTION.txt` and the description);
 - do not sell it, and do not call it official.
 
 These come from KnoxMap's terms, OpenStreetMap's attribution guidelines and
@@ -118,7 +127,10 @@ The town you publish is yours. Portal does not add its own links to it.
   It does the map building. Portal is a front end for it.
 - **Knoxify** by arytek, the project KnoxMap is built on.
 - **Map data** © [OpenStreetMap](https://www.openstreetmap.org/copyright)
-  contributors, available under the Open Database License (ODbL).
+  contributors, available under the Open Database License (ODbL). Towns made
+  with gap filling also use
+  [Microsoft Global ML Building Footprints](https://github.com/microsoft/GlobalMLBuildingFootprints)
+  or [Overture Maps](https://overturemaps.org) data, also under the ODbL.
 - Thanks to The Indie Stone for creating Project Zomboid
   (https://projectzomboid.com/), which made this possible. This is an
   unofficial fan production for non-commercial purposes made under the Indie

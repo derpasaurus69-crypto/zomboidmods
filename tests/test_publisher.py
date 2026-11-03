@@ -82,3 +82,21 @@ def test_preview_is_cropped_from_town_picture(tmp_path):
 def test_reminder_text():
     assert REMINDER == ("This map shows a real place, including homes, schools and places of "
                         "worship. Publish it only if you are comfortable sharing that.")
+
+
+def test_gap_filled_town_credits_microsoft_on_the_page(tmp_path):
+    from dataclasses import replace
+    town = replace(installed(tmp_path), extra_buildings=("microsoft",))
+    text = "\n".join(lines(prepare(town, tmp_path / "Workshop")))
+    assert "Microsoft Global ML Building Footprints" in text
+
+
+def test_republish_keeps_a_public_item_public(tmp_path):
+    town = installed(tmp_path)
+    folder = prepare(town, tmp_path / "Workshop")
+    (folder / "workshop.txt").write_text(
+        "version=1\nid=3912345678\ntitle=My Bardstown\ndescription=Mine.\n"
+        "tags=Build 42;Map;Realistic\nvisibility=public\n", encoding="utf-8")
+    ls = lines(prepare(town, tmp_path / "Workshop"))
+    assert ls == ["version=1", "id=3912345678", "title=My Bardstown", "description=Mine.",
+                  "tags=Build 42;Map;Realistic", "visibility=public"]

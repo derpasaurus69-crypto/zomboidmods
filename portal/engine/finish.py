@@ -154,6 +154,24 @@ def write_spawn_picture_lua(mod_root: Path, mod_id: str, map_dir_name: str, titl
     return path
 
 
+EXTRA_CREDITS = {  # same wording as portal.model.EXTRA_BUILDING_CREDITS
+    "microsoft": "Some building footprints from Microsoft Global ML Building Footprints, "
+                 "available under the ODbL: https://github.com/microsoft/GlobalMLBuildingFootprints",
+    "overture": "Some building footprints © Overture Maps Foundation, available under the ODbL: "
+                "https://overturemaps.org",
+}
+
+
+def credit_extra_buildings(mod_root: Path, sources: list[str]) -> None:
+    """Gaps filled from another source need their own credit beside OpenStreetMap's."""
+    path = Path(mod_root) / "ATTRIBUTION.txt"
+    text = path.read_text(encoding="utf-8") if path.exists() else ""
+    lines = [EXTRA_CREDITS[s] for s in sources if s in EXTRA_CREDITS and EXTRA_CREDITS[s] not in text]
+    if lines:
+        path.write_text(text.rstrip("\n") + "\n\nMORE BUILDINGS\n" + "\n".join(lines) + "\n",
+                        encoding="utf-8")
+
+
 def pick_spawns(spots: list[tuple[int, int]], centre: tuple[float, float], metres_per_tile: float = 1,
                 count: int = 8, radius_m: float = 400, spacing_m: float = 25) -> list[tuple[int, int]]:
     """Homes near the centre, nearest first, not all on one block.

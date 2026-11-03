@@ -26,7 +26,12 @@ from protocol import encode, overall_pct  # noqa: E402
 
 KNOXMAP = Path(os.environ.get("KNOXMAP_DIR", r"D:\modding\pz-portal-engine\knoxmap"))
 HOST = {"Host": "127.0.0.1"}  # KnoxMap refuses any other Host
-ATTRIBUTION = "Map data (c) OpenStreetMap contributors, available under the ODbL.\n"
+# Only used if KnoxMap ever packages a mod without its own ATTRIBUTION.txt.
+ATTRIBUTION = ("Map data (c) OpenStreetMap contributors, available under the Open Database License "
+               "(ODbL): https://www.openstreetmap.org/copyright\n"
+               "Generated with KnoxMap by euclid80tr (https://github.com/spytheeuclidean-a11y/knoxmap).\n"
+               "Thanks to The Indie Stone for creating Project Zomboid. This is an unofficial fan "
+               "production for non-commercial purposes, not made or endorsed by The Indie Stone.\n")
 
 _out = sys.stdout
 
@@ -226,7 +231,16 @@ def finish_mod(project: Path, mod_root: Path, extras, plan: dict, preview, title
     """Poster, spawn picture and central spawns, on top of what KnoxMap packaged."""
     _step("poster", finish.add_poster, mod_root, preview, title)
     _step("spawn picture", _spawn_picture, Path(project), mod_root, title)
-    return _step("spawn points", _spawns, Path(project), mod_root, extras, plan) or {}
+    sources = _extra_buildings(Path(project)) if plan.get("fill_gaps") else []
+    if sources:
+        _step("credits", finish.credit_extra_buildings, mod_root, sources)
+    result = _step("spawn points", _spawns, Path(project), mod_root, extras, plan) or {}
+    return {**result, "extra_buildings": sources}
+
+
+def _extra_buildings(project: Path) -> list[str]:
+    """Which footprint sources KnoxMap filled gaps from (it caches each beside the map)."""
+    return [s for s in ("microsoft", "overture") if (project / f"{project.name}_{s}.json.gz").exists()]
 
 
 def _spawn_picture(project: Path, mod_root: Path, title: str) -> None:

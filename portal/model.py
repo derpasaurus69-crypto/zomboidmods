@@ -30,6 +30,14 @@ class Place:
         return cls(**{**d, "bbox": tuple(d["bbox"])})
 
 
+EXTRA_BUILDING_CREDITS = {
+    "microsoft": "Some building footprints from Microsoft Global ML Building Footprints, "
+                 "available under the ODbL: https://github.com/microsoft/GlobalMLBuildingFootprints",
+    "overture": "Some building footprints © Overture Maps Foundation, available under the ODbL: "
+                "https://overturemaps.org",
+}
+
+
 @dataclass(frozen=True)
 class AreaPlan:
     place: Place
@@ -73,10 +81,15 @@ class Town:
     preview: str | None
     workshop_id: str | None
     created: str
+    extra_buildings: tuple[str, ...] = ()  # "microsoft" / "overture" when gaps were filled
+
+    @property
+    def credits(self) -> list[str]:
+        return [EXTRA_BUILDING_CREDITS[s] for s in self.extra_buildings if s in EXTRA_BUILDING_CREDITS]
 
     def to_dict(self) -> dict:
         return asdict(self)
 
     @classmethod
     def from_dict(cls, d: dict) -> "Town":
-        return cls(**d)
+        return cls(**{**d, "extra_buildings": tuple(d.get("extra_buildings") or ())})

@@ -1,1 +1,1 @@
-﻿"""Portal: type a real place, play it in Project Zomboid."""
+"""Portal: type a real place, play it in Project Zomboid."""

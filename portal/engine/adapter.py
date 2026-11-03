@@ -106,10 +106,14 @@ class EngineAdapter:
         if not r.get("build42"):
             return EngineStatus(False, version, "Project Zomboid is not on Build 42. In Steam: "
                                 "Properties > Betas, pick the Build 42 branch, let it update.")
-        if version not in self.tested_versions and not self.allow_untested:
+        # KnoxMap updates itself, so take any release in a tested series (1.8.x).
+        series = {".".join(v.split(".")[:2]) for v in self.tested_versions}
+        if ".".join(str(version).split(".")[:2]) not in series and not self.allow_untested:
             return EngineStatus(False, version,
                                 f"KnoxMap {version} has not been tested with Portal. "
-                                f"Supported: {', '.join(sorted(self.tested_versions))}.")
+                                f"Supported: {', '.join(sorted(s + '.x' for s in series))}. "
+                                "Install KnoxMap 1.8.4, or set allow_untested_engine to true in "
+                                "%LOCALAPPDATA%\\Portal\\settings.json to try it anyway.")
         return EngineStatus(True, version, None)
 
     def search(self, q: str) -> list[Place]:

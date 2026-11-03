@@ -23,26 +23,30 @@ def workshop_root() -> Path:
     return Path(os.environ.get("USERPROFILE", Path.home())) / "Zomboid" / "Workshop"
 
 
-def description(title: str) -> list[str]:
+def description(title: str, extra_credits: list[str] = ()) -> list[str]:
     """Credits every published town needs (ODbL, KnoxMap's terms, TIS Modding Policy)."""
     return [f"Real-world map of {title}, generated with Portal and KnoxMap.",
-            "Buildings follow OpenStreetMap; everything inside them is invented.",
+            "Streets and buildings follow real map data; everything inside the buildings is invented.",
             "",
             "Map data © OpenStreetMap contributors, available under the ODbL: "
             "https://www.openstreetmap.org/copyright",
+            *extra_credits,
             "Built with KnoxMap by euclid80tr (github.com/spytheeuclidean-a11y/knoxmap), "
             "based on Knoxify by arytek.",
             "Unofficial fan production for non-commercial purposes, not affiliated with "
             "or endorsed by The Indie Stone. Thanks to The Indie Stone for creating Project Zomboid."]
 
 
-def _read_existing(path: Path) -> tuple[str | None, list[str]]:
-    """The Workshop id the game wrote back after an upload, and the player's own description."""
-    if not path.exists():
-        return None, []
-    lines = path.read_text(encoding="utf-8").splitlines()
-    ids = [ln[3:].strip() for ln in lines if ln.startswith("id=") and ln[3:].strip()]
-    return (ids[0] if ids else None), [ln[12:] for ln in lines if ln.startswith("description=")]
+def _read_existing(path: Path) -> dict[str, list[str]]:
+    """What the last upload left: the id the game wrote back, and the player's own
+    title, description, tags and visibility."""
+    found: dict[str, list[str]] = {}
+    if path.exists():
+        for ln in path.read_text(encoding="utf-8").splitlines():
+            key, sep, value = ln.partition("=")
+            if sep and key in ("id", "title", "description", "tags", "visibility"):
+                found.setdefault(key, []).append(value)
+    return found
 
 
 def prepare(town: Town, workshop_root: Path) -> Path:
@@ -53,15 +57,17 @@ def prepare(town: Town, workshop_root: Path) -> Path:
     shutil.copytree(town.mod_dir, contents, ignore=shutil.ignore_patterns(MARKER))
     _write_preview(town, folder / "preview.png")
 
-    # Publishing again must keep the id, or the next upload makes a second item.
-    old_id, old_description = _read_existing(folder / "workshop.txt")
-    workshop_id = old_id or town.workshop_id
+    # Publishing again must keep the id, or the next upload makes a second item,
+    # and must keep what the player chose (a public item stays public).
+    old = _read_existing(folder / "workshop.txt")
+    workshop_id = next((v.strip() for v in old.get("id", []) if v.strip()), None) or town.workshop_id
     lines = ["version=1"]
     if workshop_id:
         lines.append(f"id={workshop_id}")
-    lines.append(f"title={town.title}")
-    lines += [f"description={d}" for d in (old_description or description(town.title))]
-    lines += ["tags=Build 42;Map", "visibility=unlisted"]
+    lines.append(f"title={old.get('title', [town.title])[0]}")
+    lines += [f"description={d}" for d in (old.get("description") or description(town.title, town.credits))]
+    lines += [f"tags={old.get('tags', ['Build 42;Map'])[0]}",
+              f"visibility={old.get('visibility', ['unlisted'])[0]}"]
     (folder / "workshop.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return folder
 

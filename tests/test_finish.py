@@ -119,3 +119,15 @@ def test_spawnpoints_file_has_knoxmaps_shape(tmp_path):
         "      { posX = 22650, posY = 1650, posZ = 0 },\n"
         "      { posX = 22700, posY = 1600, posZ = 0 }\n"
         "    }\n  }\nend\n")
+
+
+def test_gap_filled_buildings_are_credited_once(tmp_path):
+    from portal.model import EXTRA_BUILDING_CREDITS
+    assert finish.EXTRA_CREDITS == EXTRA_BUILDING_CREDITS  # the runner cannot import portal.model
+    mod, _ = fake_mod(tmp_path)
+    (mod / "ATTRIBUTION.txt").write_text("Map data (c) OpenStreetMap contributors\n", encoding="utf-8")
+    finish.credit_extra_buildings(mod, ["microsoft"])
+    finish.credit_extra_buildings(mod, ["microsoft"])
+    text = (mod / "ATTRIBUTION.txt").read_text(encoding="utf-8")
+    assert text.startswith("Map data (c) OpenStreetMap contributors")
+    assert text.count("Microsoft Global ML Building Footprints") == 1 and "ODbL" in text

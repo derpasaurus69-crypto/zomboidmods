@@ -67,6 +67,11 @@ def test_check_build41(tmp_path, monkeypatch):
     assert not s.ok and "Build 42" in s.problem
 
 
+def test_a_later_release_in_the_tested_series_is_accepted(tmp_path, monkeypatch):
+    s = adapter(tmp_path, "newer", monkeypatch).check()
+    assert s.ok and s.version == "1.8.9"
+
+
 def test_generate_refused_on_untested_engine(tmp_path, monkeypatch):
     with pytest.raises(EngineError, match="1.8.4"):
         run(adapter(tmp_path, "old", monkeypatch), tmp_path)
