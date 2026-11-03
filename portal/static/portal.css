@@ -36,3 +36,4 @@ progress { width: 100%; height: 14px; accent-color: var(--bar); }
 .steps { padding-left: 20px; }
 .sr { position: absolute; left: -9999px; }
 footer { font-size: .85rem; margin-top: 24px; }
+.spawn { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }

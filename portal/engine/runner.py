@@ -21,6 +21,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import finish  # noqa: E402
 from protocol import encode, overall_pct  # noqa: E402
 
 KNOXMAP = Path(os.environ.get("KNOXMAP_DIR", r"D:\modding\pz-portal-engine\knoxmap"))
@@ -166,11 +167,64 @@ def cmd_generate(args: dict) -> dict:
     mod_root = Path(mod_root)
     if not (mod_root / "ATTRIBUTION.txt").exists():
         (mod_root / "ATTRIBUTION.txt").write_text(ATTRIBUTION, encoding="utf-8")
+    result = finish_mod(OUTPUT_DIR / name, mod_root, _extras, plan, preview, title)
     if preview and Path(preview).exists():
         shutil.copyfile(preview, staging / f"{name}.preview.png")
         preview = str(staging / f"{name}.preview.png")
     progress("package", 1, "Done")
-    return {"mod_dir": str(mod_root), "preview": preview}
+    return {"mod_dir": str(mod_root), "preview": preview, **result}
+
+
+def _projector(project: Path):
+    """KnoxMap's own projection for this map (maps are turned, so not plain degrees)."""
+    from generator.rendering.projection import Projector
+    info = json.loads((project / f"{project.name}_info.json").read_text(encoding="utf-8"))
+    b, mpt = info["bbox"], float(info.get("meters_per_tile") or 1)
+    return Projector.build(b["south"], b["west"], b["north"], b["east"], mpt, info.get("rotation", 0.0))
+
+
+def _step(what: str, fn, *a):
+    """Portal's own touches never cost the map: log and carry on."""
+    try:
+        return fn(*a)
+    except Exception as exc:  # noqa: BLE001
+        print(f"Portal: {what} skipped: {exc!r}", file=sys.stderr)
+        return None
+
+
+def _spawns(project: Path, mod_root: Path, extras, plan: dict) -> dict:
+    if any(Path(e).name == "spawnpoints.lua" for e in extras or ()):
+        return {}  # the project brought its own spawns
+    from tools import make_map_mod
+    target = next(mod_root.glob("common/media/maps/*/spawnpoints.lua"), None)
+    if target is None:
+        return {}
+    ox, oy = make_map_mod._world_origin_tiles(str(project))
+    spots = make_map_mod._spawn_tiles(str(project), limit=10 ** 6)
+    place, spawn = plan["place"], plan.get("spawn")
+    pr = _projector(project)
+    mpt = pr.meters_per_tile
+    cx, cy = pr.to_px(place["lat"], place["lon"])
+    if spawn:
+        sx, sy = pr.to_px(spawn["lat"], spawn["lon"])
+        if 0 <= sx < pr.width and 0 <= sy < pr.height:
+            x, y = finish.nearest_spot(spots, (sx, sy), mpt)
+            finish.write_spawnpoints(target, [(x + ox, y + oy)])
+            return {"spawn": {"x": x + ox, "y": y + oy, "at": "address"}}
+        print(f"Portal: spawn address {spawn} is outside the map", file=sys.stderr)
+    if not spots:
+        return {}
+    points = [(x + ox, y + oy) for x, y in finish.pick_spawns(spots, (cx, cy), mpt)]
+    finish.write_spawnpoints(target, points)
+    return {"spawn": {"x": points[0][0], "y": points[0][1], "at": "centre"}}
+
+
+def finish_mod(project: Path, mod_root: Path, extras, plan: dict, preview, title: str) -> dict:
+    """Poster, spawn picture and central spawns, on top of what KnoxMap packaged."""
+    _step("poster", finish.add_poster, mod_root, preview, title)
+    for map_dir in mod_root.glob("common/media/maps/*"):
+        _step("spawn picture", finish.frame_spawn_picture, map_dir)
+    return _step("spawn points", _spawns, Path(project), mod_root, extras, plan) or {}
 
 
 COMMANDS = {"check": cmd_check, "search": cmd_search, "estimate": cmd_estimate,

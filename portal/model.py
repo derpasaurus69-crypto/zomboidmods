@@ -37,6 +37,7 @@ class AreaPlan:
     side_km: float
     cells: int
     est_minutes: int
+    spawn: dict | None = None  # {"lat", "lon", "label"}: start here instead of near the centre
 
     def to_dict(self) -> dict:
         return {**asdict(self), "place": self.place.to_dict()}

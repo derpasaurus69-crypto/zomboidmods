@@ -26,6 +26,14 @@ elif command == "search":
     elif mode == "fail":
         emit(event="error", message="Search failed: no network")
         sys.exit(1)
+    elif "Far Street" in json.loads(sys.argv[2])["q"]:
+        emit(event="result", results=[{"name": "1", "display_name": "1, Far Street, Elsewhere",
+                                       "lat": 37.9, "lon": -85.4, "bbox": [37.9, -85.4, 37.9, -85.4],
+                                       "type": "house", "outline": None}])
+    elif "Example Road" in json.loads(sys.argv[2])["q"]:
+        emit(event="result", results=[{"name": "12", "display_name": "12, Example Road, Bardstown",
+                                       "lat": 37.802, "lon": -85.401, "bbox": [37.802, -85.401, 37.802, -85.401],
+                                       "type": "house", "outline": None}])
     else:
         emit(event="result", results=[{"name": "Bardstown", "display_name": "Bardstown, Kentucky, United States",
                                        "lat": 37.8, "lon": -85.4, "bbox": [37.7, -85.5, 37.9, -85.3],
@@ -55,6 +63,8 @@ elif command == "generate":
         f.write(f"name={args['title']}\nid={args['map_name']}\n")
     with open(os.path.join(mod, "ATTRIBUTION.txt"), "w") as f:
         f.write("ATTRIBUTION.txt")
+    with open(os.path.join(mod, "plan.json"), "w") as f:  # so tests can see what was asked
+        json.dump(args["plan"], f)
     preview = os.path.join(args["staging_dir"], args["map_name"] + ".preview.png")
     with open(preview, "wb") as f:
         f.write(b"\x89PNG fake")

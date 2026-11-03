@@ -5,7 +5,7 @@ a = Analysis(
     ['portal_launcher.py'],
     pathex=[],
     binaries=[],
-    datas=[('portal/templates', 'portal/templates'), ('portal/static', 'portal/static'), ('portal/engine/runner.py', 'portal/engine'), ('portal/engine/protocol.py', 'portal/engine')],
+    datas=[('portal/templates', 'portal/templates'), ('portal/static', 'portal/static'), ('portal/engine/runner.py', 'portal/engine'), ('portal/engine/protocol.py', 'portal/engine'), ('portal/engine/finish.py', 'portal/engine')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

@@ -1,3 +1,4 @@
+import json
 import sys
 import time
 from pathlib import Path
@@ -92,6 +93,38 @@ def test_engine_is_given_a_title_with_the_size(env, tmp_path):
     wait_done(c)
     info = tmp_path / "mods" / "portal_bardstown_kentucky_town" / "mod.info"
     assert "name=Bardstown, Kentucky (Town)" in info.read_text(encoding="utf-8")
+
+
+def test_generate_passes_a_spawn_address_to_the_engine(env, tmp_path):
+    c, _, _ = env()
+    r = post(c, "/api/generate", {"place": PLACE, "preset": "downtown",
+                                  "spawn_address": "12 Example Road"})
+    assert r.status_code == 200
+    assert wait_done(c)["state"] == "done"
+    plan = json.loads((tmp_path / "mods" / r.get_json()["mod_id"] / "plan.json").read_text())
+    assert plan["spawn"] == {"lat": 37.802, "lon": -85.401,
+                             "label": "12, Example Road, Bardstown"}
+
+
+def test_generate_without_an_address_spawns_near_the_centre(env, tmp_path):
+    c, _, _ = env()
+    mod = post(c, "/api/generate", {"place": PLACE, "preset": "downtown", "spawn_address": "  "}
+               ).get_json()["mod_id"]
+    wait_done(c)
+    assert json.loads((tmp_path / "mods" / mod / "plan.json").read_text())["spawn"] is None
+
+
+def test_spawn_address_off_the_map_is_refused_before_anything_starts(env):
+    c, _, _ = env()
+    r = post(c, "/api/generate", {"place": PLACE, "preset": "downtown", "spawn_address": "1 Far Street"})
+    assert r.status_code == 400 and "outside the downtown area" in r.get_json()["error"]
+    assert get(c, "/api/job").get_json()["state"] == "idle"
+
+
+def test_spawn_address_not_found(env):
+    c, _, _ = env("noresults")
+    r = post(c, "/api/generate", {"place": PLACE, "preset": "downtown", "spawn_address": "Nowhere 1"})
+    assert r.status_code == 400 and "Could not find" in r.get_json()["error"]
 
 
 def test_generate_leaves_staging_empty_and_keeps_preview(env, tmp_path):

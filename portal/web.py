@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from dataclasses import replace
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
@@ -64,9 +65,31 @@ def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
         return jsonify({"plan": p.to_dict(), "mod_id": mod, "title": ids.title(p.place, p.preset),
                         "estimate": estimate, "existing": library.get(mod) is not None})
 
+    def spawn_from_body(p):
+        """Geocode the optional spawn address and make sure it is on the map."""
+        address = ((request.get_json(silent=True) or {}).get("spawn_address") or "").strip()
+        if not address:
+            return None, None
+        found = adapter.search(address)
+        if not found:
+            return None, f"Could not find the address '{address}'. Try adding the town and state."
+        a = found[0]
+        if planner.distance_km(p.place.lat, p.place.lon, a.lat, a.lon) > p.side_km / 2:
+            return None, (f"{a.display_name} is outside the {p.preset.replace('_', ' ')} area. "
+                          "Pick a bigger size or an address nearer the centre.")
+        return {"lat": a.lat, "lon": a.lon, "label": a.display_name}, None
+
     @app.post("/api/generate")
     def generate():
         p = plan_from_body()
+        try:
+            spawn, problem = spawn_from_body(p)
+        except EngineError as exc:
+            return jsonify({"error": str(exc)}), 502
+        if problem:
+            return jsonify({"error": problem}), 400
+        if spawn:
+            p = replace(p, spawn=spawn)
         impossible = adapter.estimate(p).get("impossible")
         if impossible:
             i = PRESET_ORDER.index(p.preset)
