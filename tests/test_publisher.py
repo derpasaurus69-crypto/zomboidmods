@@ -33,17 +33,33 @@ def test_layout(tmp_path):
 
 def test_workshop_txt(tmp_path):
     ls = lines(prepare(installed(tmp_path), tmp_path / "Workshop"))
-    assert ls == ["version=1",
-                  "title=Bardstown, Kentucky",
-                  "description=Real-world map of Bardstown, Kentucky generated with Portal and KnoxMap.",
-                  "description=Map data © OpenStreetMap contributors (ODbL).",
-                  "tags=Build 42;Map",
-                  "visibility=unlisted"]
+    assert ls[:2] == ["version=1", "title=Bardstown, Kentucky"]
+    assert ls[-2:] == ["tags=Build 42;Map", "visibility=unlisted"]
+    text = "\n".join(ls)
+    assert "Map data © OpenStreetMap contributors, available under the ODbL" in text
+    assert "https://www.openstreetmap.org/copyright" in text
+    assert "KnoxMap by euclid80tr" in text and "Knoxify by arytek" in text
+    assert "not affiliated with or endorsed by The Indie Stone" in text
+    assert "buymeacoffee" not in text  # a player's own town carries no tip link
+    assert all(ln.startswith(("version=", "title=", "description=", "tags=", "visibility="))
+               for ln in ls)
 
 
 def test_workshop_id_written_when_known(tmp_path):
     ls = lines(prepare(installed(tmp_path, workshop_id="3912345678"), tmp_path / "Workshop"))
     assert ls[1] == "id=3912345678"
+
+
+def test_republish_keeps_the_id_and_description_from_the_last_upload(tmp_path):
+    town = installed(tmp_path)
+    folder = prepare(town, tmp_path / "Workshop")
+    # After an upload the game writes the id back; the player may edit the text.
+    (folder / "workshop.txt").write_text(
+        "version=1\nid=3912345678\ntitle=Bardstown, Kentucky\ndescription=My own words.\n"
+        "tags=Build 42;Map\nvisibility=public\n", encoding="utf-8")
+    ls = lines(prepare(town, tmp_path / "Workshop"))
+    assert ls[1] == "id=3912345678"
+    assert [ln for ln in ls if ln.startswith("description=")] == ["description=My own words."]
 
 
 def test_republish_replaces_contents(tmp_path):

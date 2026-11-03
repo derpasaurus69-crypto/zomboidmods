@@ -23,6 +23,28 @@ def workshop_root() -> Path:
     return Path(os.environ.get("USERPROFILE", Path.home())) / "Zomboid" / "Workshop"
 
 
+def description(title: str) -> list[str]:
+    """Credits every published town needs (ODbL, KnoxMap's terms, TIS Modding Policy)."""
+    return [f"Real-world map of {title}, generated with Portal and KnoxMap.",
+            "Buildings follow OpenStreetMap; everything inside them is invented.",
+            "",
+            "Map data © OpenStreetMap contributors, available under the ODbL: "
+            "https://www.openstreetmap.org/copyright",
+            "Built with KnoxMap by euclid80tr (github.com/spytheeuclidean-a11y/knoxmap), "
+            "based on Knoxify by arytek.",
+            "Unofficial fan production for non-commercial purposes, not affiliated with "
+            "or endorsed by The Indie Stone. Thanks to The Indie Stone for creating Project Zomboid."]
+
+
+def _read_existing(path: Path) -> tuple[str | None, list[str]]:
+    """The Workshop id the game wrote back after an upload, and the player's own description."""
+    if not path.exists():
+        return None, []
+    lines = path.read_text(encoding="utf-8").splitlines()
+    ids = [ln[3:].strip() for ln in lines if ln.startswith("id=") and ln[3:].strip()]
+    return (ids[0] if ids else None), [ln[12:] for ln in lines if ln.startswith("description=")]
+
+
 def prepare(town: Town, workshop_root: Path) -> Path:
     folder = Path(workshop_root) / town.mod_id
     contents = folder / "Contents" / "mods" / town.mod_id
@@ -31,14 +53,15 @@ def prepare(town: Town, workshop_root: Path) -> Path:
     shutil.copytree(town.mod_dir, contents, ignore=shutil.ignore_patterns(MARKER))
     _write_preview(town, folder / "preview.png")
 
+    # Publishing again must keep the id, or the next upload makes a second item.
+    old_id, old_description = _read_existing(folder / "workshop.txt")
+    workshop_id = old_id or town.workshop_id
     lines = ["version=1"]
-    if town.workshop_id:
-        lines.append(f"id={town.workshop_id}")
-    lines += [f"title={town.title}",
-              f"description=Real-world map of {town.title} generated with Portal and KnoxMap.",
-              "description=Map data © OpenStreetMap contributors (ODbL).",
-              "tags=Build 42;Map",
-              "visibility=unlisted"]
+    if workshop_id:
+        lines.append(f"id={workshop_id}")
+    lines.append(f"title={town.title}")
+    lines += [f"description={d}" for d in (old_description or description(town.title))]
+    lines += ["tags=Build 42;Map", "visibility=unlisted"]
     (folder / "workshop.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return folder
 
