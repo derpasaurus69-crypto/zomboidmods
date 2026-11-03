@@ -166,6 +166,71 @@ Solo, "Rising", run with `-debug`.
 5. **Console: pass.** No line mentions SpawnPicture. The only Lua errors are
    vanilla's Muldraugh mannequin zone.
 
+## Companion mod check: "Portal" (portal_companion, 64c55c5)
+
+Game started through Steam, windowed, no `-debug`. The Mods screen showed the
+mod loading from the prepared Workshop folder
+(`Zomboid/Workshop/portal_companion/...`, Source: Workshop). That copy matches
+`Zomboid/mods/portal_companion` file for file (7 files, same hashes).
+Bardstown (Town) stayed enabled. No controller tested.
+
+1. **Mods list: pass.** "Portal" has a map icon, and the details panel shows
+   the poster (dark map, PORTAL, "real towns for Project Zomboid") and the
+   description.
+2. **Main menu entry: pass.** After Accept, PORTAL sits right after CREDITS
+   with QUIT below it, in the same font and spacing. On hover it gets the same
+   grey bar as the vanilla entries, with the same width. Nothing overlaps or is
+   cut off. QUIT still opens "Quit to desktop?" and Yes closes the game.
+   ![Main menu with PORTAL](companion-main-menu.jpg)
+3. **Panel: pass.** The panel is titled "Portal towns" and has the one-line
+   intro. The list shows Bardstown, Kentucky (Portal spike), Bardstown,
+   Kentucky (Town), Schuylkill Haven, Pennsylvania (Town) and Ürgüp, Central
+   Anatolia Region. Each has a size and Enabled or Not enabled (only Bardstown
+   (Town) is Enabled). Portal itself is not listed. The two Town mods have
+   poster thumbnails. The spike and Ürgüp have none, because they were made
+   before posters, so they show a dark square. With nothing selected, the right
+   side shows the three steps, the GitHub releases URL, the one-at-a-time
+   note, the credits and the tip URL.
+4. **Selected town: pass.** Selecting Bardstown (Town) shows its poster at the
+   top of the right column, then its name, "Town (up to 3 km)", Enabled and
+   how to play. The text starts at the top of its box.
+   ![Panel with Bardstown selected](companion-panel-town-selected.jpg)
+5. **Buttons: pass.**
+   - "Copy download link" opens a dialog reading "Link copied. Paste it into
+     your browser:", with the URL on the next line. There is no literal `\n` or
+     `<br>`. The block is centred in the dialog; the two lines share a left
+     edge. OK closes it. The clipboard held
+     `https://github.com/derpasaurus69-crypto/zomboidmods/releases`.
+   - "Copy tip link" behaves the same, and the clipboard held
+     `https://buymeacoffee.com/derpasauruo`.
+   - "Make your own town" copied the download link and showed the same dialog,
+     since the companion has no Workshop ID yet.
+   - "Town's Workshop page" stays greyed out with nothing selected and with
+     Bardstown selected. Clicking it does nothing. The Bardstown copy the
+     game loads is the local Workshop folder, which has no Workshop ID.
+6. **Back and Esc: pass.** BACK closes the panel and the main menu returns.
+   Reopening it shows the guide again with nothing selected, and Esc closes
+   it. With the copy dialog open, Esc closes neither the dialog nor the panel;
+   OK is the way out.
+7. **Window size: pass, with a cramped detail column.** Maximising the window
+   and then shrinking it to 1280×760 keeps the panel centred at 80% of the
+   window, fully on screen, and the buttons fit. The town list keeps the width
+   it had when the panel opened, though, so in the small window the right
+   column is narrow. The town name wraps, the text needs its scrollbar, and
+   one line runs up against the scrollbar.
+   ![Panel after shrinking the window](companion-panel-small-window.jpg)
+8. **Console: pass.** `console.txt` shows `loading portal_companion` and no
+   Lua errors at all; nothing mentions PortalCompanion. The other errors are
+   vanilla fonts and fluid containers. One line to know about:
+   `mod "portal_companion" overrides media/lua/shared/translate/en/ui.json`.
+   Vanilla strings still showed (BACK, Ok, the menu), so the game merged the
+   two files rather than replacing vanilla's, but a file name that doesn't
+   match vanilla's would avoid the question.
+
+Cosmetic: the panel is 80% opaque, so the game's logo shows faintly behind
+the "Portal towns" title, and its top edge pokes out above the panel. The copy
+dialog is also see-through, so the town text shows behind it.
+
 ## Not checked yet
 
 - Multiplayer.
