@@ -75,12 +75,13 @@ Solo, "Rising" preset, default character. The game ran windowed for the test
 
 ## In-game playtest: Schuylkill Haven, Pennsylvania (Town)
 
-Tests the poster, spawn-map and address-spawn changes (commits 9806d9b,
-eaa016e, 595d97c). The mod was made with fill_gaps (2,421 buildings) and has
-one spawn point, at the address Dean chose. Solo, "Rising", game started
-with `-debug` and windowed; Bardstown turned off so the two maps could not
-overlap. The address is not written here, and no screenshot here shows the
-spawn house's position.
+Tests the poster, spawn-map and address-spawn changes ("feat: poster, spawn
+picture, central spawns and spawn-at-address" and the two commits after it).
+The mod was made with fill_gaps (2,421 buildings) and has one spawn point,
+at the address Dean chose. Solo, "Rising", game started with `-debug` and
+windowed; Bardstown turned off so the two maps could not overlap. The address
+is not written here. The street and world-map screenshots from this run were
+removed because they could show where the spawn house is.
 
 1. **Poster and map icon: pass.** The Mods list shows a map icon next to
    "Schuylkill Haven, Pennsylvania (Town)" and the poster (the town render)
@@ -102,17 +103,14 @@ spawn house's position.
    point, standing in the doorway of a lit, furnished bathroom (sink, toilet,
    bathtub, rug). The debug console reported room=bathroom inside a building
    with a kitchen, living room, two bedrooms and a bathroom; the square is free
-   and not solid, so the character was not in a wall. The world map puts the
-   house on the street of the address Dean chose. Not a dark house, empty lot or
-   map edge.
+   and not solid, so the character was not in a wall. The world map put the
+   house on the right street. Not a dark house, empty lot or map edge.
    ![Spawn room](schuylkill-town-spawn-room.jpg)
 4. **Streets, buildings, world map: pass.** Residential streets with sidewalks,
    front paths, mailboxes, parked cars and brick or sided houses with pitched
    roofs. The world map shows the Schuylkill River and real street names
    (East Main Street, West Main Street, Saint John Street, Jackson Street,
    Daisy Alley) and labelled places (Island Park, Green Goose Playground).
-   ![Street](schuylkill-town-street.jpg)
-   ![World map](schuylkill-town-worldmap.jpg)
 
 ### Recheck: spawn-screen picture after the fix
 
@@ -171,7 +169,9 @@ Solo, "Rising", run with `-debug`.
 ## Not checked yet
 
 - Multiplayer.
-- Ürgüp and the downtown preset in the client (only Bardstown Town was played).
+- Ürgüp, the Downtown and City core presets in the client (Bardstown and
+  Schuylkill Haven were played, both at the Town size).
+- Updating an item already on the Workshop (Publish again with its id).
 
 ## Bugs found and fixed on the way
 
@@ -179,3 +179,7 @@ Solo, "Rising", run with `-debug`.
 - Previews and engine logs were left in the staging folder.
 - A damaged preview image crashed Publish.
 - Each size of one place had the same mod name and map folder (found in-game).
+- No poster, a blank spawn-screen picture and spawns at the map edge (found
+  in-game, fixed and rechecked in-game).
+- A thinly mapped town (Schuylkill Haven, 157 buildings) left the chosen
+  address on an empty lot; fixed with the gap-filling option.

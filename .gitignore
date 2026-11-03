@@ -10,3 +10,4 @@ spike/.server_admin_pw
 spike/.portal_pid
 spike/.server_pid
 spike/*.err
+docs/release/draft-copy.md
