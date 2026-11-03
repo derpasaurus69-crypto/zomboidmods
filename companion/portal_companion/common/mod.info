@@ -1,0 +1,5 @@
+name=Portal
+id=portal_companion
+description=Lists the Portal towns you have installed and shows how to make your own real town with the free Portal app. Unofficial; maps are built by KnoxMap. Map data (c) OpenStreetMap contributors (ODbL).
+poster=poster.png
+category=features
