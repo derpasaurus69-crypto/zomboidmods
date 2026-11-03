@@ -21,11 +21,21 @@ def place_key(place: Place) -> str:
     return slug(place.display_name)
 
 
-def mod_id(place: Place, preset: str) -> str:
+def _name_and_region(place: Place) -> list[str]:
     parts = [p.strip() for p in place.display_name.split(",") if p.strip()]
     words = [parts[0] if parts else place.name]
     if len(parts) >= 3:
         words.append(parts[-2])  # the state or region, before the country
+    return words
+
+
+def title(place: Place) -> str:
+    """'Bardstown, Kentucky': what players see, in the place's own spelling."""
+    return ", ".join(_name_and_region(place))
+
+
+def mod_id(place: Place, preset: str) -> str:
+    words = _name_and_region(place)
     middle = "_".join(s for s in (slug(w) for w in words) if s) or "place"
     suffix = f"_{preset}"
     room = MAX_MOD_ID - len(PREFIX) - len(suffix)

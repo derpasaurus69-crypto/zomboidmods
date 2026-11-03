@@ -1,0 +1,38 @@
+:root {
+  --bg: #f4f2ec; --panel: #ffffff; --ink: #1f2420; --muted: #5d665f;
+  --accent: #6b2a22; --accent-ink: #ffffff; --line: #d9d5ca; --bar: #6b2a22;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #141713; --panel: #1d211c; --ink: #e6e3d8; --muted: #a3a99f;
+          --accent: #c4574a; --accent-ink: #141713; --line: #343a32; --bar: #c4574a; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+       font: 16px/1.5 system-ui, "Segoe UI", sans-serif; }
+main { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { margin: 0; font-size: 2rem; letter-spacing: .02em; }
+h2 { font-size: 1.15rem; margin: 0 0 12px; }
+.sub, .note, footer { color: var(--muted); }
+.engine:empty { display: none; }
+.engine.bad { color: var(--accent); font-weight: 600; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+          padding: 16px; margin-top: 16px; }
+form { display: flex; gap: 8px; }
+input { flex: 1; min-width: 0; padding: 10px 12px; font: inherit; color: inherit;
+        background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+button { padding: 10px 14px; font: inherit; border-radius: 8px; cursor: pointer;
+         border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: default; }
+#results, #towns { list-style: none; padding: 0; margin: 8px 0 0; }
+#results li button, #towns li { width: 100%; text-align: left; margin-top: 6px; }
+#towns li { padding: 8px 0; border-top: 1px solid var(--line); }
+.kind { color: var(--muted); font-size: .9em; }
+.presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.presets button[aria-pressed="true"] { outline: 2px solid var(--accent); }
+.presets small { display: block; color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+progress { width: 100%; height: 14px; accent-color: var(--bar); }
+.steps { padding-left: 20px; }
+.sr { position: absolute; left: -9999px; }
+footer { font-size: .85rem; margin-top: 24px; }

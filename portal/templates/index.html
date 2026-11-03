@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Portal</h1>
+    <p class="sub">Type a real place. Play it in Project Zomboid.</p>
+    <p id="engine" class="engine" role="status"></p>
+  </header>
+
+  <section id="find">
+    <form id="search-form">
+      <label for="q" class="sr">Place</label>
+      <input id="q" name="q" placeholder="Bardstown, Kentucky" autocomplete="off" required>
+      <button type="submit">Search</button>
+    </form>
+    <p id="search-note" class="note" role="status"></p>
+    <ol id="results"></ol>
+  </section>
+
+  <section id="size" hidden>
+    <h2 id="size-title"></h2>
+    <div id="presets" class="presets"></div>
+    <p id="plan-note" class="note"></p>
+    <div class="actions">
+      <button id="generate" class="primary">Generate &amp; Play</button>
+      <button id="play-existing" hidden>Play existing</button>
+    </div>
+  </section>
+
+  <section id="job" hidden>
+    <h2>Making <span id="job-title"></span></h2>
+    <progress id="bar" max="100" value="0"></progress>
+    <p id="job-step" class="note" role="status"></p>
+    <button id="cancel">Cancel</button>
+  </section>
+
+  <section id="done" hidden>
+    <h2><span id="done-title"></span> is installed</h2>
+    <ol class="steps">
+      <li>Press <b>Launch Project Zomboid</b>.</li>
+      <li>Enable <b id="done-mod"></b> under <b>Mods</b>.</li>
+      <li>Start a <b>New Game</b> and choose <b id="done-spawn"></b> as the spawn.</li>
+    </ol>
+    <div class="actions">
+      <button id="launch" class="primary">Launch Project Zomboid</button>
+      <button id="publish">Publish to Workshop…</button>
+    </div>
+    <div id="publish-note" class="note" hidden></div>
+  </section>
+
+  <section id="towns-section">
+    <h2>Your towns</h2>
+    <ul id="towns"></ul>
+  </section>
+
+  <footer>Map data © OpenStreetMap contributors (ODbL). Maps built by KnoxMap.</footer>
+</main>
+<script src="{{ url_for('static', filename='portal.js') }}"></script>
+</body>
+</html>
