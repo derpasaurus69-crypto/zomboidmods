@@ -14,7 +14,7 @@ from .library import TownLibrary
 from .model import Place
 
 LOCAL_HOSTS = {"127.0.0.1", "localhost", "[::1]", "::1"}
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 PRESET_ORDER = list(planner.PRESETS)
 
 

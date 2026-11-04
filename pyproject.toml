@@ -1,6 +1,6 @@
 [project]
 name = "portal"
-version = "0.1.0"
+version = "0.2.0"
 description = "Type a real place, play it in Project Zomboid (Build 42), built on KnoxMap."
 requires-python = ">=3.11"
 dependencies = ["flask>=3.0", "pillow>=10.0"]

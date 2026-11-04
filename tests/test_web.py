@@ -83,7 +83,7 @@ def test_licences_page_has_portals_and_bundled_licences(env):
 def test_about_credits_and_tip_link(env):
     c, _, _ = env()
     page = get(c, "/").data.decode()
-    assert "Portal 0.1.0" in page
+    assert "Portal 0.2.0" in page
     assert "https://buymeacoffee.com/derpasauruo" in page
     assert "euclid80tr" in page and "arytek" in page
     assert "https://www.openstreetmap.org/copyright" in page
