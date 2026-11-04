@@ -138,3 +138,27 @@ Same place: Bardstown, KY, `town` preset, same box and outline, seed 1. Use a ne
 - Apartment share drops sharply.
 - No absurd towers.
 - Total time stays at or under 2x normal.
+
+## A/B result: Bardstown, Kentucky (Town), 2026-11-04
+
+Same place and size, built on Dean's PC. Standard is the existing build; Accurate
+used American building style and real-curve roads.
+
+| | Standard | Accurate |
+|---|---|---|
+| Buildings | 3,012 | 3,118 (285 added from Overture) |
+| Blocks of flats | 1,296 (43.0%) | 144 (4.6%) |
+| Storeys in total | 6,908 | 5,739 |
+| Heights from real data | 0 | 113 |
+| Storey counts | 1: 889, 2: 910, 3: 792, 4: 312, 5: 79, 6: 30 | 1: 1,236, 2: 1,204, 3: 628, 4: 39, 5: 11 |
+| Mod size | 185 MB | 181 MB |
+| Generate step | 61-111 s | 5,085 s (download 32 s; the rest is routing roads) |
+| Compile | about 601 s | 392 s (fewer storeys) |
+| Total | about 16 min | 94.8 min |
+
+![Standard (left) and Accurate (right)](playtest/bardstown-standard-vs-accurate.png)
+
+The roads follow Bardstown's real curves and its roundabout in Accurate, where
+Standard straightens them. That is worth it but slow, so "Roads follow their
+real curves" is its own switch, on by default in Accurate, and Portal's
+estimate adds about half a minute a cell for it. Not yet played in the game.

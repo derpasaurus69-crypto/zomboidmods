@@ -80,17 +80,18 @@ function pick(place) {
 function quality() {
   const accurate = $("mode-accurate").checked;
   return { mode: accurate ? "accurate" : "standard", style: $("style").value,
-           fill_gaps: accurate || $("fill-gaps").checked };
+           fill_gaps: accurate || $("fill-gaps").checked, true_roads: $("true-roads").checked };
 }
 
 function onQualityChange() {
   const accurate = $("mode-accurate").checked;
   show("style-row", accurate);
+  show("true-roads-row", accurate);
   $("fill-gaps").disabled = accurate;  // Accurate always adds the missing buildings
   if (accurate) $("fill-gaps").checked = true;
   if (chosen) choosePreset(preset);
 }
-for (const id of ["mode-standard", "mode-accurate", "style"]) $(id).addEventListener("change", onQualityChange);
+for (const id of ["mode-standard", "mode-accurate", "style", "true-roads"]) $(id).addEventListener("change", onQualityChange);
 
 async function choosePreset(key) {
   preset = key;

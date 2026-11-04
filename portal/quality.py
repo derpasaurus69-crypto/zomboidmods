@@ -38,8 +38,11 @@ BUILDING_STYLE = {
 }
 AMERICAN_COUNTRIES = ("united states", "canada", "australia", "new zealand")
 
-# Accurate spends more time downloading footprints and routing roads.
+# Accurate spends more time downloading footprints and laying out buildings.
 TIME_FACTOR = {"standard": 1.0, "accurate": 1.5}
+# Routing every road along its real line (straight_roads 3) is the slow part:
+# Bardstown town (169 cells) spent 84 of its 95 minutes on it, 2026-11-04.
+TRUE_ROADS_MINUTES_PER_CELL = 0.5
 
 
 def style_for(place: Place, style: str = "auto") -> str:
@@ -49,12 +52,22 @@ def style_for(place: Place, style: str = "auto") -> str:
     return "american" if country in AMERICAN_COUNTRIES else "european"
 
 
-def engine_settings(mode: str, place: Place, style: str = "auto", fill_gaps: bool = False) -> dict | None:
-    """The settings dict for /api/generate, or None to keep KnoxMap's defaults."""
+def engine_settings(mode: str, place: Place, style: str = "auto", fill_gaps: bool = False,
+                    true_roads: bool = True) -> dict | None:
+    """The settings dict for /api/generate, or None to keep KnoxMap's defaults.
+
+    true_roads=False keeps Standard's straightened roads (straight_roads 1)
+    in an Accurate build, which saves most of its time.
+    """
     if mode not in MODES:
         raise ValueError(f"Unknown mode {mode!r}; choose one of {', '.join(MODES)}.")
     if style not in STYLES:
         raise ValueError(f"Unknown building style {style!r}; choose one of {', '.join(STYLES)}.")
     if mode == "accurate":
-        return {**ACCURATE, **BUILDING_STYLE[style_for(place, style)]}
+        roads = {} if true_roads else {"straight_roads": 1}
+        return {**ACCURATE, **BUILDING_STYLE[style_for(place, style)], **roads}
     return {"fill_gaps": 1} if fill_gaps else None
+
+
+def extra_minutes(settings: dict | None, cells: int) -> int:
+    return round(cells * TRUE_ROADS_MINUTES_PER_CELL) if settings and settings.get("straight_roads") == 3 else 0

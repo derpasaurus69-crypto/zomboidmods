@@ -45,7 +45,14 @@ def test_accurate_plan_takes_longer_and_always_fills_gaps():
     standard = planner.plan(place(), "town")
     accurate = planner.plan(place(), "town", mode="accurate")
     assert standard.est_minutes == 19 and standard.settings is None and not standard.fill_gaps
-    assert accurate.est_minutes == 29 and accurate.fill_gaps and accurate.settings["max_levels"] == 12
+    # 169 cells: 29 min as before plus about half a minute a cell routing real roads
+    assert accurate.est_minutes == 29 + 84 and accurate.fill_gaps and accurate.settings["max_levels"] == 12
+
+
+def test_accurate_can_keep_standard_roads_to_save_time():
+    quick = planner.plan(place(), "town", mode="accurate", true_roads=False)
+    assert quick.settings["straight_roads"] == 1 and quick.settings["building_alignment"] == "rectilinear"
+    assert quick.est_minutes == 29
 
 
 def test_an_accurate_build_is_its_own_mod():

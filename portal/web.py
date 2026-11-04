@@ -41,7 +41,8 @@ def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
         body = request.get_json(silent=True) or {}
         return planner.plan(Place.from_dict(body["place"]), body["preset"],
                             mode=body.get("mode") or "standard", style=body.get("style") or "auto",
-                            fill_gaps=bool(body.get("fill_gaps")))
+                            fill_gaps=bool(body.get("fill_gaps")),
+                            true_roads=body.get("true_roads", True) is not False)
 
     @app.get("/")
     def index():

@@ -27,15 +27,16 @@ def distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 
 
 def plan(place: Place, preset: str, mode: str = "standard", style: str = "auto",
-         fill_gaps: bool = False) -> AreaPlan:
+         fill_gaps: bool = False, true_roads: bool = True) -> AreaPlan:
     if preset not in PRESETS:
         raise ValueError(f"Unknown preset {preset!r}; choose one of {', '.join(PRESETS)}.")
-    settings = quality.engine_settings(mode, place, style, fill_gaps)
+    settings = quality.engine_settings(mode, place, style, fill_gaps, true_roads)
     side_km = PRESETS[preset]
     # A square never lines up with the cell grid, so it overlaps one more
     # cell each way. An outline that clips the square only lowers this.
     per_side = math.ceil(side_km * 1000 / CELL_METERS) + 1
     cells = per_side ** 2
-    minutes = math.ceil((cells * MINUTES_PER_CELL + BASE_MINUTES) * quality.TIME_FACTOR[mode])
+    minutes = math.ceil((cells * MINUTES_PER_CELL + BASE_MINUTES) * quality.TIME_FACTOR[mode]) \
+        + quality.extra_minutes(settings, cells)
     return AreaPlan(place=place, preset=preset, side_km=side_km, cells=cells, est_minutes=minutes,
                     fill_gaps=bool(settings and settings.get("fill_gaps")), mode=mode, settings=settings)

@@ -43,8 +43,10 @@
       <label class="check"><input type="radio" name="mode" id="mode-standard" checked>
         Standard: quick, uses KnoxMap's defaults</label>
       <label class="check"><input type="radio" name="mode" id="mode-accurate">
-        Accurate (slower): real building outlines and heights where they exist, truer roads,
-        no invented blocks of flats</label>
+        Accurate (slower): real building outlines and heights where they exist, no invented
+        blocks of flats</label>
+      <label class="check" id="true-roads-row" hidden><input type="checkbox" id="true-roads" checked>
+        Roads follow their real curves (much slower: about an hour for a town, hours for a city)</label>
       <label class="spawn" id="style-row" hidden>Building style for buildings with no data
         <select id="style">
           <option value="auto">Guess from the country</option>
