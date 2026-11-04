@@ -44,3 +44,6 @@ footer a { color: inherit; }
 footer details { margin-top: 8px; }
 footer summary { cursor: pointer; }
 footer ul { padding-left: 20px; }
+.quality { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 12px 0; }
+.quality legend { padding: 0 4px; }
+.quality select { padding: 6px; font: inherit; color: inherit; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }

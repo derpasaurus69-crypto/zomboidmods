@@ -125,7 +125,9 @@ def cmd_generate(args: dict) -> dict:
 
     progress("generate", 0, "Downloading the map data")
     body = {**area_body(plan), "metersPerTile": 1, "mapName": name}
-    if plan.get("fill_gaps"):
+    if plan.get("settings"):  # chosen by portal.quality; KnoxMap saves them with the map
+        body["settings"] = plan["settings"]
+    elif plan.get("fill_gaps"):
         body["settings"] = {"fill_gaps": 1}
     call(client, "POST", "/api/generate", body)
     progress("generate", 1, "Map data ready")
@@ -235,7 +237,12 @@ def finish_mod(project: Path, mod_root: Path, extras, plan: dict, preview, title
     if sources:
         _step("credits", finish.credit_extra_buildings, mod_root, sources)
     result = _step("spawn points", _spawns, Path(project), mod_root, extras, plan) or {}
-    return {**result, "extra_buildings": sources}
+    warnings = []
+    if plan.get("fill_gaps") and not sources:
+        # KnoxMap carries on with OpenStreetMap alone if the download fails.
+        warnings.append("The extra buildings could not be downloaded, so this map uses "
+                        "OpenStreetMap's buildings only.")
+    return {**result, "extra_buildings": sources, "warnings": warnings}
 
 
 def _extra_buildings(project: Path) -> list[str]:

@@ -34,19 +34,23 @@ def _name_and_region(place: Place) -> list[str]:
 PRESET_LABELS = {"downtown": "Downtown", "town": "Town", "city_core": "City core"}
 
 
-def title(place: Place, preset: str | None = None) -> str:
+def title(place: Place, preset: str | None = None, mode: str = "standard") -> str:
     """'Bardstown, Kentucky (Town)': what players see, in the place's own spelling.
 
     KnoxMap names the mod and its map folder after this, so each size of a
     place needs its own: two mods with one map folder collide in the game.
+    An accurate build is its own mod too, so it never replaces a standard one.
     """
     name = ", ".join(_name_and_region(place))
-    return f"{name} ({PRESET_LABELS[preset]})" if preset else name
+    if not preset:
+        return name
+    label = PRESET_LABELS[preset] + (", accurate" if mode == "accurate" else "")
+    return f"{name} ({label})"
 
 
-def mod_id(place: Place, preset: str) -> str:
+def mod_id(place: Place, preset: str, mode: str = "standard") -> str:
     words = _name_and_region(place)
     middle = "_".join(s for s in (slug(w) for w in words) if s) or "place"
-    suffix = f"_{preset}"
+    suffix = f"_{preset}" + ("_accurate" if mode == "accurate" else "")
     room = MAX_MOD_ID - len(PREFIX) - len(suffix)
     return PREFIX + middle[:room].rstrip("_") + suffix

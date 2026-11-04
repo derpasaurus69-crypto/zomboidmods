@@ -35,7 +35,7 @@ class JobRunner:
         with self._lock:
             if self._status["state"] == "running":
                 raise Busy("A map is already being made.")
-            mod = ids.mod_id(plan.place, plan.preset)
+            mod = ids.mod_id(plan.place, plan.preset, plan.mode)
             self._status = {"state": "running", "pct": 0, "step": "", "message": "Starting",
                             "mod_id": mod}
         self._cancel.clear()
@@ -62,7 +62,7 @@ class JobRunner:
         return str(shutil.move(path, folder / name))
 
     def _run(self, plan: AreaPlan, mod: str) -> None:
-        name = ids.title(plan.place, plan.preset)
+        name = ids.title(plan.place, plan.preset, plan.mode)
         try:
             for p in self.adapter.generate(plan, mod, installer.staging_dir(self.mods_dir),
                                            name, self._cancel):
@@ -79,7 +79,9 @@ class JobRunner:
                                   workshop_id=getattr(self.library.get(mod), "workshop_id", None),
                                   created=datetime.now().isoformat(timespec="seconds"),
                                   extra_buildings=tuple(result.get("extra_buildings") or ())))
-            self._set(state="done", pct=100, message="Installed")
+            warnings = result.get("warnings") or []
+            self._set(state="done", pct=100, message=" ".join(["Installed."] + warnings),
+                      warnings=warnings)
         except EngineCancelled:
             self._set(state="cancelled", message="Cancelled")
         except (EngineError, installer.ForeignModError, ValueError, OSError) as exc:

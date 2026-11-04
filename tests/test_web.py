@@ -151,6 +151,25 @@ def test_generate_without_an_address_spawns_near_the_centre(env, tmp_path):
     assert plan["spawn"] is None and plan["fill_gaps"] is False
 
 
+def test_accurate_mode_sends_its_settings_and_makes_its_own_mod(env, tmp_path):
+    c, _, _ = env()
+    plan = post(c, "/api/plan", {"place": PLACE, "preset": "downtown", "mode": "accurate"}).get_json()
+    assert plan["mod_id"] == "portal_bardstown_kentucky_downtown_accurate"
+    assert plan["title"] == "Bardstown, Kentucky (Downtown, accurate)"
+    mod = post(c, "/api/generate", {"place": PLACE, "preset": "downtown", "mode": "accurate",
+                                    "style": "american"}).get_json()["mod_id"]
+    assert wait_done(c)["state"] == "done"
+    sent = json.loads((tmp_path / "mods" / mod / "plan.json").read_text())
+    assert sent["mode"] == "accurate" and sent["fill_gaps"] is True
+    assert sent["settings"]["straight_roads"] == 3 and sent["settings"]["apartment_chance"] == 0.1
+
+
+def test_unknown_mode_is_a_400(env):
+    c, _, _ = env()
+    r = post(c, "/api/plan", {"place": PLACE, "preset": "downtown", "mode": "ultra"})
+    assert r.status_code == 400 and "Unknown mode" in r.get_json()["error"]
+
+
 def test_fill_gaps_is_passed_to_the_engine(env, tmp_path):
     c, _, _ = env()
     mod = post(c, "/api/generate", {"place": PLACE, "preset": "downtown", "fill_gaps": True}

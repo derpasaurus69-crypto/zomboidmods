@@ -47,6 +47,8 @@ class AreaPlan:
     est_minutes: int
     spawn: dict | None = None  # {"lat", "lon", "label"}: start here instead of near the centre
     fill_gaps: bool = False  # add buildings OpenStreetMap has not mapped (Microsoft/Overture)
+    mode: str = "standard"  # or "accurate" (portal.quality)
+    settings: dict | None = None  # what Portal sends KnoxMap; None keeps its defaults
 
     def to_dict(self) -> dict:
         return {**asdict(self), "place": self.place.to_dict()}

@@ -33,9 +33,15 @@ def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
         if request.host.rsplit(":", 1)[0] not in LOCAL_HOSTS:
             return jsonify({"error": "Portal only answers this PC."}), 403
 
+    @app.errorhandler(ValueError)
+    def bad_request(exc):  # an unknown size, mode or building style
+        return jsonify({"error": str(exc)}), 400
+
     def plan_from_body():
         body = request.get_json(silent=True) or {}
-        return planner.plan(Place.from_dict(body["place"]), body["preset"])
+        return planner.plan(Place.from_dict(body["place"]), body["preset"],
+                            mode=body.get("mode") or "standard", style=body.get("style") or "auto",
+                            fill_gaps=bool(body.get("fill_gaps")))
 
     @app.get("/")
     def index():
@@ -84,8 +90,8 @@ def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
             estimate = adapter.estimate(p)
         except EngineError as exc:
             estimate = {"tight": None, "impossible": None, "error": str(exc)}
-        mod = ids.mod_id(p.place, p.preset)
-        return jsonify({"plan": p.to_dict(), "mod_id": mod, "title": ids.title(p.place, p.preset),
+        mod = ids.mod_id(p.place, p.preset, p.mode)
+        return jsonify({"plan": p.to_dict(), "mod_id": mod, "title": ids.title(p.place, p.preset, p.mode),
                         "estimate": estimate, "existing": library.get(mod) is not None})
 
     def spawn_from_body(p):
@@ -111,8 +117,7 @@ def create_app(adapter: EngineAdapter, library: TownLibrary, mods_dir: Path,
             return jsonify({"error": str(exc)}), 502
         if problem:
             return jsonify({"error": problem}), 400
-        p = replace(p, spawn=spawn,
-                    fill_gaps=bool((request.get_json(silent=True) or {}).get("fill_gaps")))
+        p = replace(p, spawn=spawn)
         try:
             impossible = adapter.estimate(p).get("impossible")
         except EngineError as exc:

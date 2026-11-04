@@ -38,6 +38,21 @@
       <input id="spawn-address" type="text" autocomplete="off"
              placeholder="Street and number, town - leave empty to start near the centre">
     </label>
+    <fieldset class="quality">
+      <legend>Detail</legend>
+      <label class="check"><input type="radio" name="mode" id="mode-standard" checked>
+        Standard: quick, uses KnoxMap's defaults</label>
+      <label class="check"><input type="radio" name="mode" id="mode-accurate">
+        Accurate (slower): real building outlines and heights where they exist, truer roads,
+        no invented blocks of flats</label>
+      <label class="spawn" id="style-row" hidden>Building style for buildings with no data
+        <select id="style">
+          <option value="auto">Guess from the country</option>
+          <option value="american">American: mostly houses</option>
+          <option value="european">European: more blocks of flats</option>
+        </select>
+      </label>
+    </fieldset>
     <label class="check"><input id="fill-gaps" type="checkbox">
       Add buildings OpenStreetMap is missing (slower; use it if the town looks empty)</label>
     <div class="actions">
@@ -65,6 +80,7 @@
       <button id="publish">Publish to Workshop…</button>
     </div>
     <div id="publish-note" class="note" hidden></div>
+    <p id="done-note" class="note" role="status" hidden></p>
   </section>
 
   <section id="towns-section">

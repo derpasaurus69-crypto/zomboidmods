@@ -76,12 +76,28 @@ function pick(place) {
   choosePreset("downtown");
 }
 
+// Standard or Accurate, and the building style Accurate guesses with.
+function quality() {
+  const accurate = $("mode-accurate").checked;
+  return { mode: accurate ? "accurate" : "standard", style: $("style").value,
+           fill_gaps: accurate || $("fill-gaps").checked };
+}
+
+function onQualityChange() {
+  const accurate = $("mode-accurate").checked;
+  show("style-row", accurate);
+  $("fill-gaps").disabled = accurate;  // Accurate always adds the missing buildings
+  if (accurate) $("fill-gaps").checked = true;
+  if (chosen) choosePreset(preset);
+}
+for (const id of ["mode-standard", "mode-accurate", "style"]) $(id).addEventListener("change", onQualityChange);
+
 async function choosePreset(key) {
   preset = key;
   for (const b of $("presets").children) b.setAttribute("aria-pressed", String(b.dataset.preset === key));
   $("plan-note").textContent = "Checking…";
   try {
-    lastPlan = await api("/api/plan", { place: chosen, preset });
+    lastPlan = await api("/api/plan", { place: chosen, preset, ...quality() });
     const p = lastPlan.plan, e = lastPlan.estimate;
     let note = `${p.cells} map cells, about ${p.est_minutes} minutes.`;
     if (e.impossible) note = e.impossible;
@@ -98,7 +114,7 @@ async function choosePreset(key) {
 $("generate").addEventListener("click", async () => {
   try {
     await api("/api/generate", { place: chosen, preset, spawn_address: $("spawn-address").value,
-                                fill_gaps: $("fill-gaps").checked });
+                                ...quality() });
     $("job-title").textContent = lastPlan.title;
     show("size", false); show("done", false); show("job");
     poll();
@@ -116,6 +132,8 @@ async function poll() {
   $("job-step").textContent = s.message;
   if (s.state === "running") return setTimeout(poll, 1000);
   show("job", false);
+  $("done-note").textContent = (s.warnings || []).join(" ");
+  show("done-note", Boolean(s.warnings && s.warnings.length));
   if (s.state === "done") finished(s.mod_id, lastPlan.title);
   else { show("size"); $("plan-note").textContent = s.message; }
   loadTowns();
